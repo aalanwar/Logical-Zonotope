@@ -70,10 +70,6 @@ classdef DataDrivenRA < handle
         options;
         AB;
         UL;
-        X_0TL;
-        X_1TL;
-        ndigits;
-        dataStep;
     end
 
     methods
@@ -95,9 +91,7 @@ classdef DataDrivenRA < handle
             obj.yData = obj.mocaplogsRA(:,6)+obj.dataNoiseStateFactor*rand(length(obj.mocaplogsRA(:,6)),1);
             obj.timeDataState = obj.mocaplogsRA(:,3);
             
-            obj.dataStep=10;
-            %datavector = [1:datastep:10,200:datastep:300,900:datastep:1000,2000:datastep:2100, 3000:datastep:3100];
-            datavector= 1:obj.dataStep:3000;%[1:2:10,400:450,900:1000,2000:2100];
+            datavector = [1:2:10,200:300,900:1000,2000:2100, 3000:3100];%[1:2:10,400:450,900:1000,2000:2100];
             obj.totalsamples=length(datavector);%ceil(length(obj.mocaplogsRA(:,1))-1);
             
             obj.X_0T = [obj.xData(datavector),obj.yData(datavector)]';
@@ -124,10 +118,9 @@ classdef DataDrivenRA < handle
             obj.maxU2 = max(obj.U_full(2,:));
             obj.minU2= min(obj.U_full(2,:));
 
-            obj.numXGrids=1023;
-            obj.numYGrids=1023;
-            obj.numUGrids=1023;
-            obj.ndigits = ceil(log2((obj.numXGrids-1)^2));
+            obj.numXGrids=101;
+            obj.numYGrids=101;
+            obj.numUGrids=101;
             obj.hX=linspace(obj.minXState-1,obj.maxXState+1,obj.numXGrids);%for 128 resolution
             [~,~,obj.binX]=histcounts(obj.xData(datavector),obj.hX);
             obj.hY=linspace(obj.minYState-1,obj.maxYState+1,obj.numYGrids);%for 128 resolution
@@ -152,7 +145,7 @@ classdef DataDrivenRA < handle
             end
             % convert to binary
 
-            pointB = dec2bin(points,obj.ndigits);
+            pointB = dec2bin(points);
             
             [rows,cols]=size(pointB);
             for i =1:rows
@@ -168,7 +161,7 @@ classdef DataDrivenRA < handle
             end
             dataBinary=str2num(newpointB)';
 
-            pointBU = dec2bin(pointsU,obj.ndigits);
+            pointBU = dec2bin(pointsU);
             [rows,cols]=size(pointBU);
             for i =1:rows
                 row=[];
@@ -244,17 +237,8 @@ classdef DataDrivenRA < handle
             %R1=R0;
             Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
             [rowsR0, colsR0]= size(R0.c);
-            
-            if obj.ndigits == rowsR0
-                %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
-                halfWay = obj.hX(ceil(length(obj.hX)/2));
-                quant = 0.05;
-                R1 = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* Ulog);
-            else
-                R1=R0;
-                disp("error number of bits")
-            end
-
+            %R1 = or((obj.AB(:,1:rowsR0)>0.5) * R0,(obj.AB(:,rowsR0+1:end)>0.5)* Ulog);
+            R1 = todecimal(obj.AB(:,1:rowsR0)>0.7) * R0;
             %R1=R0;
         end
 
@@ -287,7 +271,7 @@ classdef DataDrivenRA < handle
 
             % convert to binary
 
-            pointB = dec2bin(point,obj.ndigits);
+            pointB = dec2bin(point);
 
             [rows,cols]=size(pointB);
             for i =1:rows

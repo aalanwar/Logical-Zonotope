@@ -1,0 +1,36 @@
+function res = isempty(obj)
+% is_empty - returns 1 if a zonotope is empty and 0 otherwise
+%
+% Syntax:  
+%    res = is_empty(obj)
+%
+% Inputs:
+%    obj - zonotope object
+%
+% Outputs:
+%    res - result in {0,1}
+%
+% Example: 
+%    Z1 = zonotope([]);
+%    Z2 = zonotope([0;0]);
+%    Z3 = zonotope([1;0],[1 -2 1; 0 1 -2]);
+%    isempty(Z1); % true
+%    isempty(Z2); % false
+%    isempty(Z3); % false
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: ---
+
+% Author:       Amr Alanwar
+% Written:      12-August-2022
+% Last update:  
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+res = isempty(obj.c) && isempty(obj.G);
+
+%------------- END OF CODE --------------
