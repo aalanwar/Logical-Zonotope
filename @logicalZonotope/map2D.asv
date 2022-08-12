@@ -1,0 +1,28 @@
+function location2D= map2D(Z)
+%MAP2D Summary of this function goes here
+%   Detailed explanation goes here
+dim = length(Z.c);
+numXGrids=4095;
+numYGrids=4095;
+hX=linspace(0,2^dim,numXGrids);%for 128 resolution
+hY=linspace(0,2^dim,numYGrids);%for 128 resolution
+
+binaryPoints=evaluate(Z);
+[rows,cols]=size(binaryPoints);
+decPoints=[];
+for i =1:cols
+    strPoint= num2str( binaryPoints(:,i) );
+    temp='';
+    for j =1:length(strPoint)
+        temp = strcat(temp,strPoint(j));
+    end
+    d=bin2dec( temp );
+    decPoints = [decPoints,d];
+end
+
+
+Ydata = floor( (decPoints)./numXGrids) +1;
+Xdata =  decPoints - numXGrids.*(Ydata -1);
+location2D = [hX(Xdata) ; hY(Ydata) ];
+end
+

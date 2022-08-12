@@ -97,7 +97,7 @@ classdef DataDrivenRA < handle
             obj.timeDataState = obj.mocaplogsRA(:,3);
             
             obj.dataStep=10;
-            %datavector = [1:datastep:10,200:datastep:300,900:datastep:1000,2000:datastep:2100, 3000:datastep:3100];
+            %datavector = [1:obj.dataStep:10,200:obj.dataStep:300,900:obj.dataStep:1000,2000:obj.dataStep:2100, 3000:obj.dataStep:3100];
             datavector= 1:obj.dataStep:3000;%[1:2:10,400:450,900:1000,2000:2100];
             obj.totalsamples=length(datavector);%ceil(length(obj.mocaplogsRA(:,1))-1);
             
@@ -129,9 +129,9 @@ classdef DataDrivenRA < handle
             obj.numYGrids=1023;
             obj.numUGrids=1023;
             obj.ndigits = ceil(log2((obj.numXGrids-1)^2));
-            obj.hX=linspace(obj.minXState-1,obj.maxXState+1,obj.numXGrids);%for 128 resolution
+            obj.hX=linspace(-1,2.5,obj.numXGrids);%for 128 resolution
             [~,~,obj.binX]=histcounts(obj.xData(datavector),obj.hX);
-            obj.hY=linspace(obj.minYState-1,obj.maxYState+1,obj.numYGrids);%for 128 resolution
+            obj.hY=linspace(-3,2,obj.numYGrids);%for 128 resolution
             [~,~,obj.binY]=histcounts(obj.yData(datavector),obj.hY);
             obj.hU1=linspace(obj.minU1,obj.maxU1,obj.numUGrids);%for 128 resolution
             [~,~,obj.binU1]=histcounts(obj.U_full(1,:),obj.hU1);
@@ -253,8 +253,14 @@ classdef DataDrivenRA < handle
             if obj.ndigits == rowsR0
                 %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
                 %halfWay = obj.hX(ceil(length(obj.hX)/2));
-                quant = 0.08;
-                R_logic = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
+                quant = 0.04;
+                R_logic{1} = R0;
+                
+                for i=1:steps
+                R_logic{i+1} = or((obj.AB(:,1:rowsR0)>quant) * R_logic{i},(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
+                %R_logic{i+1} = reduce(R_logic{i+1});
+                end
+
             else
                 R_logic=R0;
                 disp("error number of bits")
@@ -264,30 +270,40 @@ classdef DataDrivenRA < handle
         end
 
         function  location=getPoints(obj,R_logic)
-            binaryPoints=evaluate(R_logic);
-            [rows,cols]=size(binaryPoints);
-            decPoints=[];
-            for i =1:cols
-               strPoint= num2str( binaryPoints(:,i) );
-               temp='';
-               for j =1:length(strPoint)
-                    temp = strcat(temp,strPoint(j));
-               end
-               d=bin2dec( temp );
-               decPoints = [decPoints,d];
-            end
-            % grid number to (x,y)
-            % remove zeros added by enclose points
-            newdecPoints=[];
-            for i=1:length(decPoints)
-                if(decPoints(i) ~=0)
-                    newdecPoints=[ newdecPoints decPoints(i)];
+            for kk=2:length(R_logic)
+                binaryPoints=evaluate(R_logic{kk});
+                [rows,cols]=size(binaryPoints);
+                decPoints=[];
+                for i =1:cols
+                    strPoint= num2str( binaryPoints(:,i) );
+                    temp='';
+                    for j =1:length(strPoint)
+                        temp = strcat(temp,strPoint(j));
+                    end
+                    d=bin2dec( temp );
+                    decPoints = [decPoints,d];
                 end
-            end
+                % grid number to (x,y)
+                % remove zeros added by enclose points
+                newdecPoints=[];
+                for i=1:length(decPoints)
+                    if(decPoints(i) ~=0)
+                        newdecPoints=[ newdecPoints decPoints(i)];
+                    end
+                end
 
-             Ydata = floor( (newdecPoints)./obj.numXGrids) +1;
-             Xdata =  newdecPoints - obj.numXGrids.*(Ydata -1)    ;
-             location = [obj.hX(Xdata) ; obj.hY(Ydata) ];
+                Ydata = floor( (newdecPoints)./obj.numXGrids) +1;
+                [flag, index] = ismember(obj.numYGrids+1,Ydata);
+                if flag
+                    Ydata(index) = length(obj.hY);
+                end
+                Xdata =  newdecPoints - obj.numXGrids.*(Ydata -1)    ;
+                [flag, index] = ismember(0,Xdata);
+                if flag
+                    Xdata(index) = 1;
+                end
+                location{kk-1} = [obj.hX(Xdata) ; obj.hY(Ydata) ];
+            end
         end
 
         function binaryVector = getGridIndex(obj,locPoints)

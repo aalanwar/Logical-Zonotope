@@ -109,12 +109,15 @@ MOBILEID = 1;
 
 
 
-stepsReach = 2;
+stepsReach = 1;
 for i =1:stepsReach
   h_reach(i) = plotZono(zonotope([zeros(2,1),0.1*diag(ones(2,1))]),[1,2],'r');
 end
 
-h_logic = plotZono(zonotope([zeros(2,1),0.1*diag(ones(2,1))]),[1,2],'k');
+
+for i =1:stepsReach
+  h_logic(i) = plotZono(zonotope([zeros(2,1),0.1*diag(ones(2,1))]),[1,2],'k');
+end
 
 plotZonotime = t_start;
 R_history = {};
@@ -160,18 +163,21 @@ while (t_last - t_start) < t_stop
         drawnow;
     end
     if walltime >= plotZonotime + DRA.timeStepDataIn*stepsReach
-           loc = [z(1) z(1)+0.05 z(1)     z(1)+0.05 z(1)-0.05 z(1)      z(1)-0.05     ; ...
-                  z(2) z(2)     z(2)+0.05 z(2)+0.05 z(2)      z(2)-0.05 z(2)-0.05];
-    
+%           loc = [z(1) z(1)+0.05 z(1)     z(1)+0.05 z(1)-0.05 z(1)      z(1)-0.05     ; ...
+%                  z(2) z(2)     z(2)+0.05 z(2)+0.05 z(2)      z(2)-0.05 z(2)-0.05];
+           loc = [ z(1)-0.05  z(1)-0.05 z(1)+0.05 z(1)+0.05    ; ...
+                   z(2)-0.05  z(2)+0.05 z(2)-0.05 z(2)+0.05 ];    
            R_logic=DRA.reachLogic(loc,stepsReach);
            locations=DRA.getPoints(R_logic);
-           ZLoc = zonotope.enclosePoints([locations]);
-           updatePlotZono(h_logic,ZLoc);
-            
+           for ii =1:stepsReach
+               ZLoc{ii} = zonotope.enclosePoints([locations{ii} locations{ii}+0.1]);
+               updatePlotZono(h_logic(ii),ZLoc{ii});
+           end
+
+
            R_data=DRA.reachDataLip(zonotope([z(1);z(2)]),stepsReach);
            for ii =1:stepsReach
                updatePlotZono(h_reach(ii),R_data{ii},[1,2],'r');
-               
                R_history{R_history_index}=R_data{ii};
                R_history_index=R_history_index+1;
            end
