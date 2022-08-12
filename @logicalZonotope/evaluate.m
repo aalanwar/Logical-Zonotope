@@ -68,42 +68,11 @@ points = Z1.c;
 end
 
 
-
-% %for o=1:numOfgen
-%     for k=1:numOfgen
-%         gen1=Z1.G{k};
-%         [rowsGen,colsGen]=size(gen1);
-%         table=truth_table(colsGen);
-%         [rowsTable,colsTable]=size(table);
-%         for i =1:rowsTable
-%             onePoint=[ table(i,1)&gen1(:,1)];
-%             for j=2:colsGen
-%                 onePoint =[ onePoint, (table(i,j)&gen1(:,j)) ];
-%             end
-%             points = [ points onePoint];
-%         end
-%         if k ==1
-%             oldPoints = points;
-%         elseif k ==numOfgen
-%             points = xor(Z1.c,points);
-%             oldPoints = points;
-%         else
-%             points = xor(oldPoints,points);
-%             oldPoints = points;
-%         end
-%     end
-
-%end
-
-% cen = ;
-% 
-% operand = [ ];
-% 
-% 
-% for i =1:numOfgen
-%     points = [ points , norLogic(operand,0&gen1{i} )  , norLogic(operand , 1& gen1{i} )];
-% end
 points=unique(points','rows')';
 end
+
+% function genBeta = computeGenBeta ()
+% 
+% end
 
 %------------- END OF CODE --------------

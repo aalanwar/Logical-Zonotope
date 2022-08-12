@@ -70,6 +70,11 @@ classdef DataDrivenRA < handle
         options;
         AB;
         UL;
+        X_0TL;
+        X_1TL;
+        ndigits;
+        dataStep;
+        ULogicalZono;
     end
 
     methods
@@ -91,7 +96,9 @@ classdef DataDrivenRA < handle
             obj.yData = obj.mocaplogsRA(:,6)+obj.dataNoiseStateFactor*rand(length(obj.mocaplogsRA(:,6)),1);
             obj.timeDataState = obj.mocaplogsRA(:,3);
             
-            datavector = [1:2:10,200:300,900:1000,2000:2100, 3000:3100];%[1:2:10,400:450,900:1000,2000:2100];
+            obj.dataStep=10;
+            %datavector = [1:datastep:10,200:datastep:300,900:datastep:1000,2000:datastep:2100, 3000:datastep:3100];
+            datavector= 1:obj.dataStep:3000;%[1:2:10,400:450,900:1000,2000:2100];
             obj.totalsamples=length(datavector);%ceil(length(obj.mocaplogsRA(:,1))-1);
             
             obj.X_0T = [obj.xData(datavector),obj.yData(datavector)]';
@@ -118,9 +125,10 @@ classdef DataDrivenRA < handle
             obj.maxU2 = max(obj.U_full(2,:));
             obj.minU2= min(obj.U_full(2,:));
 
-            obj.numXGrids=101;
-            obj.numYGrids=101;
-            obj.numUGrids=101;
+            obj.numXGrids=1023;
+            obj.numYGrids=1023;
+            obj.numUGrids=1023;
+            obj.ndigits = ceil(log2((obj.numXGrids-1)^2));
             obj.hX=linspace(obj.minXState-1,obj.maxXState+1,obj.numXGrids);%for 128 resolution
             [~,~,obj.binX]=histcounts(obj.xData(datavector),obj.hX);
             obj.hY=linspace(obj.minYState-1,obj.maxYState+1,obj.numYGrids);%for 128 resolution
@@ -145,7 +153,7 @@ classdef DataDrivenRA < handle
             end
             % convert to binary
 
-            pointB = dec2bin(points);
+            pointB = dec2bin(points,obj.ndigits);
             
             [rows,cols]=size(pointB);
             for i =1:rows
@@ -161,7 +169,7 @@ classdef DataDrivenRA < handle
             end
             dataBinary=str2num(newpointB)';
 
-            pointBU = dec2bin(pointsU);
+            pointBU = dec2bin(pointsU,obj.ndigits);
             [rows,cols]=size(pointBU);
             for i =1:rows
                 row=[];
@@ -179,7 +187,7 @@ classdef DataDrivenRA < handle
             obj.X_0TL = [dataBinary(:,1:end-1)];
             obj.X_1TL = [dataBinary(:,2:end)];
             obj.UL =  [UBinary(:,1:end-1)];
-
+            obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL);
             obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
 
            %obj.AB = X_1TL * pinv([X_0TL]);
@@ -231,14 +239,25 @@ classdef DataDrivenRA < handle
         end
         
         %function R_data = reachLLogic(obj,loc,steps)
-        function R1 =  reachLogic(obj,loc,steps)
+        function R_logic =  reachLogic(obj,loc,steps)
             binaryVector = getGridIndex(obj,loc);
-            R0 = logicalZonotope(binaryVector,[]);
-            %R1=R0;
-            Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
-            [rowsR0, colsR0]= size(R0.c);
-            %R1 = or((obj.AB(:,1:rowsR0)>0.5) * R0,(obj.AB(:,rowsR0+1:end)>0.5)* Ulog);
-            R1 = todecimal(obj.AB(:,1:rowsR0)>0.7) * R0;
+            R0 = logicalZonotope.enclosePoints(binaryVector);
+            %R_logic=R0;
+            %Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
+            if isempty(R0.c)
+                [rowsR0, colsR0]= size(R0.c);
+            end
+            
+            if obj.ndigits == rowsR0
+                %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
+                halfWay = obj.hX(ceil(length(obj.hX)/2));
+                quant = 0.2;
+                R_logic = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
+            else
+                R_logic=R0;
+                disp("error number of bits")
+            end
+
             %R1=R0;
         end
 
@@ -256,22 +275,31 @@ classdef DataDrivenRA < handle
                decPoints = [decPoints,d];
             end
             % grid number to (x,y)
-             Ydata = floor( (decPoints-1)./obj.numXGrids) +1;
-             Xdata =  decPoints - obj.numXGrids.*(Ydata -1)    ;
-             location = [obj.hX(Xdata) obj.hY(Ydata) ];
+            % remove zeros added by enclose points
+            newdecPoints=[];
+            for i=1:length(decPoints)
+                if(decPoints(i) ~=0)
+                    newdecPoints=[ newdecPoints decPoints(i)];
+                end
+            end
+
+             Ydata = floor( (newdecPoints)./obj.numXGrids) +1;
+             Xdata =  newdecPoints - obj.numXGrids.*(Ydata -1)    ;
+             location = [obj.hX(Xdata) ; obj.hY(Ydata) ];
         end
 
-        function binaryVector = getGridIndex(obj,loc)
+        function binaryVector = getGridIndex(obj,locPoints)
 
             
-            [~,~,obj.binxR]=histcounts(loc(1),obj.hX);
-            [~,~,obj.binyR]=histcounts(loc(2),obj.hY);
+            [~,~,obj.binxR]=histcounts(locPoints(1,:),obj.hX);
+            [~,~,obj.binyR]=histcounts(locPoints(2,:),obj.hY);
 
             point = (obj.binyR-1)*obj.numXGrids + obj.binxR;
 
             % convert to binary
 
-            pointB = dec2bin(point);
+            pointB = dec2bin(point,obj.ndigits);
+            
 
             [rows,cols]=size(pointB);
             for i =1:rows

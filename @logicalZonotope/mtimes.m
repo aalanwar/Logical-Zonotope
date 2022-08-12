@@ -83,22 +83,23 @@ if ~isempty(Z.G)
     for i =1:length(Z.G)
 
         [mrows,mcols]=size(matrix);
-        [grows,gcols]=size(Z.G);
+        [grows,gcols]=size(Z.G{i});
 
-        for j=1:gcols
+       % for j=1:gcols
             
             for k =1:mrows
                 temp = 0;
                 for ii =1:grows
-                    temp=temp| (matrix(k,ii) & Z.G{i}(ii,j) );
+                    temp=temp| (matrix(k,ii) & Z.G{i}(ii,1) );
                 end
-                result.G{i}(k,j) = temp;
+                result.G{i}(k,1) = temp;
             end
 
-        end
+       % end
     end
   
  Z = logicalZonotope(result.c,result.G);
+ Z = unique(Z);
 else
    Z = logicalZonotope(result.c,{}); 
 end

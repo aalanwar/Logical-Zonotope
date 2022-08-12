@@ -37,7 +37,16 @@ function Z = xor(Z1,Z2,varargin)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-newCen = xor( Z1.c,Z2.c );
+
+if(~isempty(Z1.c) & ~isempty(Z2.c))
+    newCen = xor( Z1.c,Z2.c );
+elseif (isempty(Z1.c) & isempty(Z2.c))
+    newCen =[];
+elseif isempty(Z1.c)
+    newCen = Z2.c ;
+elseif isempty(Z2.c)
+    newCen = Z1.c ;
+end
 
 if(isempty(Z1.G))
     newGen = Z2.G;

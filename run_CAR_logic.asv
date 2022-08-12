@@ -160,13 +160,14 @@ while (t_last - t_start) < t_stop
         drawnow;
     end
     if walltime >= plotZonotime + DRA.timeStepDataIn*stepsReach
-           loc = [z(1);z(2)];
-        
-           R_logic=DRA.reachLogic( loc,stepsReach );
+           loc = [z(1) z(1)+0.2 z(1)     z(1)+0.2 z(1)-0.2 z(1)     z(1)-0.2     ; ...
+                  z(2) z(2)     z(2)+0.2 z(2)+0.2];
+    
+           R_logic=DRA.reachLogic(loc,stepsReach);
            locations=DRA.getPoints(R_logic);
-           ZLoc = enclosePoints(locations);
+           ZLoc = mptPolytope.enclosePoints([locations locations+0.1]);
            updatePlotZono(h_logic,ZLoc);
-
+            
            R_data=DRA.reachDataLip(zonotope([z(1);z(2)]),stepsReach);
            for ii =1:stepsReach
                updatePlotZono(h_reach(ii),R_data{ii},[1,2],'r');

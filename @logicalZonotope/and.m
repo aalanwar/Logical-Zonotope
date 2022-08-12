@@ -27,31 +27,32 @@ function Z = and(Z1,Z2,varargin)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+if(~isempty(Z1.c) & ~isempty(Z2.c))
 newcen = Z1.c & Z2.c;
+else
+newcen =[];
+end
 
 if(~isempty(Z1.G) & ~isempty(Z2.G))
     %c2 * G1
     index =1;
-    for i=1:length(Z1.G)
-        newGen{index} = Z2.c & Z1.G{i};
-        index=index+1;
+    if(~isempty(Z2.c))
+        for i=1:length(Z1.G)
+            newGen{index} = Z2.c & Z1.G{i};
+            index=index+1;
+        end
     end
-
-    for i=1:length(Z2.G)
-        newGen{index} = Z1.c & Z2.G{i};
-        index=index+1;
+    if(~isempty(Z1.c))
+        for i=1:length(Z2.G)
+            newGen{index} = Z1.c & Z2.G{i};
+            index=index+1;
+        end
     end
-
     %G1 * G1
     for i=1:length(Z1.G)
         [rows,cols]=size(Z1.G{i});
         for k=1:length(Z2.G)
-            Gcon=[];
-            for j=1:cols
-                gZ1 = Z1.G{i}(:,j);
-                Gcon = [Gcon  (gZ1 & Z2.G{k})];
-            end
-            newGen{index} = Gcon;
+            newGen{index} = (Z1.G{i} & Z2.G{k});
             index=index+1;
         end
     end
@@ -64,11 +65,13 @@ elseif (isempty(Z2.G))
     %c2 * G1
 
     index =1;
-    for i=1:length(Z1.G)
-        newGen{index} = Z2.c & Z1.G{i};
-        index=index+1;
+    newGen ={};
+    if(~isempty(Z2.c))
+        for i=1:length(Z1.G)
+            newGen{index} = Z2.c & Z1.G{i};
+            index=index+1;
+        end
     end
-
 
     Z = logicalZonotope(newcen,newGen);
 elseif (isempty(Z1.G))
@@ -76,11 +79,12 @@ elseif (isempty(Z1.G))
     newGen = Z2.G;
 
     index =length(newGen)+1;
-    for i=1:length(Z2.G)
-        newGen{index} = Z1.c & Z2.G{i};
-        index=index+1;
+    if(~isempty(Z1.c))
+        for i=1:length(Z2.G)
+            newGen{index} = Z1.c & Z2.G{i};
+            index=index+1;
+        end
     end
-
 
     newGen{index} = Z2.c ;
 

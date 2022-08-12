@@ -49,8 +49,10 @@ if length(Z1.G) >1
     for i = 1:length(Z1.G)
         flagRedun =0;
         for j = 1:length(rednewGen)
-            if Z1.G{i} == rednewGen{j}
-                flagRedun =1;
+            if size(Z1.G{i}) == size(rednewGen{j})
+                if   double(Z1.G{i}) == double(rednewGen{j})
+                    flagRedun =1;
+                end
             end
         end
         if flagRedun ==0
