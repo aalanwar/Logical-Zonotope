@@ -74,6 +74,7 @@ classdef DataDrivenRA < handle
         X_1TL;
         ndigits;
         dataStep;
+        ULogicalZono;
     end
 
     methods
@@ -186,7 +187,7 @@ classdef DataDrivenRA < handle
             obj.X_0TL = [dataBinary(:,1:end-1)];
             obj.X_1TL = [dataBinary(:,2:end)];
             obj.UL =  [UBinary(:,1:end-1)];
-
+            obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL);
             obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
 
            %obj.AB = X_1TL * pinv([X_0TL]);
@@ -242,14 +243,14 @@ classdef DataDrivenRA < handle
             binaryVector = getGridIndex(obj,loc);
             R0 = logicalZonotope(binaryVector,[]);
             %R1=R0;
-            Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
+            %Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
             [rowsR0, colsR0]= size(R0.c);
             
             if obj.ndigits == rowsR0
                 %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
                 halfWay = obj.hX(ceil(length(obj.hX)/2));
-                quant = 0.05;
-                R1 = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* Ulog);
+                quant = 0.2;
+                R1 = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
             else
                 R1=R0;
                 disp("error number of bits")
@@ -274,7 +275,7 @@ classdef DataDrivenRA < handle
             % grid number to (x,y)
              Ydata = floor( (decPoints-1)./obj.numXGrids) +1;
              Xdata =  decPoints - obj.numXGrids.*(Ydata -1)    ;
-             location = [obj.hX(Xdata) obj.hY(Ydata) ];
+             location = [obj.hX(Xdata) ; obj.hY(Ydata) ];
         end
 
         function binaryVector = getGridIndex(obj,loc)

@@ -57,7 +57,10 @@ if(~isempty(Z1.G) & ~isempty(Z2.G))
     end
 
     Z = logicalZonotope(newcen,newGen);
-elseif (~isempty(Z1.G))
+elseif(isempty(Z1.G) & isempty(Z2.G))
+    Z = logicalZonotope(newcen,{});
+
+elseif (isempty(Z2.G))
     %c2 * G1
 
     index =1;
@@ -68,7 +71,7 @@ elseif (~isempty(Z1.G))
 
 
     Z = logicalZonotope(newcen,newGen);
-elseif (~isempty(Z2.G))
+elseif (isempty(Z1.G))
     %c2 * G1
     newGen = Z2.G;
 
@@ -83,10 +86,8 @@ elseif (~isempty(Z2.G))
 
 
     Z = logicalZonotope(newcen,newGen);
-elseif(isempty(Z1.G) & isempty(Z2.G))
-    Z = logicalZonotope(newcen,{});
-end
 
+end
 Z = unique(Z);
 end
 

@@ -38,11 +38,28 @@ function Z = unique(Z1)
 
 %------------- BEGIN CODE --------------
 
+newGen = {};
+for i = 1:length(Z1.G)
+    newGen{i} = unique(Z1.G{i}','rows')';
+end
 
-for i = 1:length()
-newGen = unique(Z1.Z(:,2:end)','rows')';
+if length(Z1.G) >1
+rednewGen ={};
+index = 1;
+for i = 1:length(Z1.G)
 
-Z = logicalZonotope(Z1.Z(:,1),newGen);
+    for j = 1:length(rednewGen)
+        if Z1.G{i} ~= Z1.G{j}
+            
+        end
+    end
+    rednewGen{index} = Z1.G{i};
+    index = index +1;
+end
+newGen = rednewGen;
+end
+
+Z = logicalZonotope(Z1.c,newGen);
 end
 
 %------------- END OF CODE --------------

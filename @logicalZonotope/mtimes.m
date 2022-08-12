@@ -66,12 +66,16 @@ end
 [mrows,mcols]=size(matrix);
 
 
-for k =1:mrows
-    temp =0;
-    for ii =1:mcols
-        temp=temp| (matrix(k,ii) & Z.c(ii) );
+if ~isempty(Z.c)
+    for k =1:mrows
+        temp =0;
+        for ii =1:mcols
+            temp=temp| (matrix(k,ii) & Z.c(ii) );
+        end
+        result.c(k,1) = temp;
     end
-    result.c(k,1) = temp;
+else
+    result.c ={};
 end
 %result.c=matrix * Z.c;
 

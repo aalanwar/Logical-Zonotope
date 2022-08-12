@@ -26,17 +26,19 @@ function Z = enclosePoints(points,varargin)
 
 %------------- BEGIN CODE --------------
 [dim,numOfPoints] = size(points);
-
-cen = [];
-newpoints = [];
-for i = 1:numOfPoints   
-    if zeros(dim,1) ==points(:,i)
-        cen =zeros(dim,1);
-    else
-        newpoints= [newpoints points(:,i)];
-    end
-end
-gen = {newpoints};
+% cen = [];
+% newpoints = [];
+% for i = 1:numOfPoints   
+%     if zeros(dim,1) ==points(:,i)
+%         cen =zeros(dim,1);
+%     else
+%         newpoints= [newpoints points(:,i)];
+%     end
+% end
+%gen = {newpoints};
+points=unique(points','rows')';
+cen =zeros(dim,1);
+gen = {points};
 Z =logicalZonotope(cen,gen);
 
 end

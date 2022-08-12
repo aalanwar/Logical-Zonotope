@@ -43,6 +43,24 @@ for i = 1:length(Z1.G)
     newGen{i} = unique(Z1.G{i}','rows')';
 end
 
+if length(Z1.G) >1
+    rednewGen ={};
+    index = 1;
+    for i = 1:length(Z1.G)
+        flagRedun =0;
+        for j = 1:length(rednewGen)
+            if Z1.G{i} == rednewGen{j}
+                flagRedun =1;
+            end
+        end
+        if flagRedun ==0
+            rednewGen{index} = Z1.G{i};
+            index = index +1;
+        end
+    end
+    newGen = rednewGen;
+end
+
 Z = logicalZonotope(Z1.c,newGen);
 end
 

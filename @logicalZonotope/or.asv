@@ -40,24 +40,15 @@ function Z = or(Z1,Z2)
 [crows1,~] = size(Z1.c);
 [crows2,~] = size(Z2.c);
 
+[grows1,gcols1] = size(Z1.G);
+[grows2,gcols2] = size(Z2.G);
 
 if ~isempty( Z1.G)
-    [grows1,gcols1] = size(Z1.G{1});
-   if (isequal(Z1.c,zeros(crows1,1)) && isequal(Z1.G{1},zeros(grows1,gcols1) ))
-        Z = Z2;
-        done =1;
-    end
-elseif ~isempty( Z2.G)
-    [grows2,gcols2] = size(Z2.G{1});
-    if (isequal(Z2.c,zeros(crows2,1)) && isequal(Z2.G{1},zeros(grows2,gcols2) ))
-        Z = Z1;
-        done =1;
+    if Z1.c == zeros(crows1,1) && Z1.G{1}
+        output = Z2
     end
 end
-
-if ~done
-    Z = nand(nand(Z1,Z1),nand(Z2,Z2));
-end
+Z = nand(nand(Z1,Z1),nand(Z2,Z2));
 Z =unique(Z);
 end
 
