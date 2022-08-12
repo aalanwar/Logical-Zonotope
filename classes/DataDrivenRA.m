@@ -253,7 +253,7 @@ classdef DataDrivenRA < handle
             if obj.ndigits == rowsR0
                 %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
                 %halfWay = obj.hX(ceil(length(obj.hX)/2));
-                quant = 0.2;
+                quant = 0.08;
                 R_logic = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
             else
                 R_logic=R0;

@@ -31,7 +31,7 @@ nm.setRigidBodyId('car-mobile', 1);
 
 %% Data Driven reachability Raw Data Log Folder
 lognameRA='ped1';
-%other logs are ped02,ped03,ped04
+%other logs are ped2,ped3,ped4
 logfolderRA = strcat('logs/',lognameRA,'/');
 DRA= DataDrivenRA( logfolderRA );
 ZepsFlag =1;
