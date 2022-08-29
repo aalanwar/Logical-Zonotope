@@ -102,6 +102,7 @@ methods
 methods (Static = true)
     %Z = generateRandom(varargin) % generate random zonotope
     Z = enclosePoints(points,varargin) % enclose point cloud with zonotope
+    Z = encloseMany(Zcell)
 end
 
 

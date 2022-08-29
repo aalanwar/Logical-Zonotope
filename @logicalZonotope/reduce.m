@@ -32,21 +32,6 @@ function Zred = reduce(Z,varargin)
 %    Zred=reduce(Z,'combastel',2);
 %    plot(Zred,[1,2],'b');
 %
-% References:
-%    [1] M. Althoff. "Reachability analysis and its application to the
-%        safety assessment of autonomous cars", 2010
-%    [2] A. Girard. "Reachability of uncertain linear systems using
-%        zonotopes". 2005
-%    [3] A. Kopetzki et al. "Methods for order reduction of zonotopes",
-%        CDC 2017
-%    [4] C. Combastel. "A state bounding observer based on zonotopes",
-%        ECC 2003
-%    [5] J. Scott et al. "Constrained zonotopes: A new tool for set-based
-%        estimation and fault detection", Automatica 2016
-%
-% Other m-files required: none
-% Subfunctions: see below
-% MAT-files required: none
 %
 % See also: none
 

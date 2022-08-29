@@ -70,7 +70,8 @@ if ~isempty(Z.c)
     for k =1:mrows
         temp =0;
         for ii =1:mcols
-            temp=temp| (matrix(k,ii) & Z.c(ii) );
+            %temp=or(temp,(matrix(k,ii) & Z.c(ii) ));
+            temp=temp + matrix(k,ii) * Z.c(ii) ;
         end
         result.c(k,1) = temp;
     end
@@ -90,15 +91,16 @@ if ~isempty(Z.G)
             for k =1:mrows
                 temp = 0;
                 for ii =1:grows
-                    temp=temp| (matrix(k,ii) & Z.G{i}(ii,1) );
+                    temp=temp + matrix(k,ii) * Z.G{i}(ii,1) ;
+                    %temp=or(temp,(matrix(k,ii) & Z.G{i}(ii,1) ));
                 end
                 result.G{i}(k,1) = temp;
             end
-
+            result.G{i} = mod(result.G{i},2);
        % end
     end
   
- Z = logicalZonotope(result.c,result.G);
+ Z = logicalZonotope(mod(result.c,2),result.G);
  Z = unique(Z);
 else
    Z = logicalZonotope(result.c,{}); 

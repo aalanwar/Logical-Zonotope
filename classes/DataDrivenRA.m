@@ -69,6 +69,8 @@ classdef DataDrivenRA < handle
         carLogModel;
         options;
         AB;
+        ABL;%logical AB
+        Aimp;%imported A
         UL;
         X_0TL;
         X_1TL;
@@ -96,7 +98,7 @@ classdef DataDrivenRA < handle
             obj.yData = obj.mocaplogsRA(:,6)+obj.dataNoiseStateFactor*rand(length(obj.mocaplogsRA(:,6)),1);
             obj.timeDataState = obj.mocaplogsRA(:,3);
             
-            obj.dataStep=10;
+            obj.dataStep=1;
             %datavector = [1:obj.dataStep:10,200:obj.dataStep:300,900:obj.dataStep:1000,2000:obj.dataStep:2100, 3000:obj.dataStep:3100];
             datavector= 1:obj.dataStep:3000;%[1:2:10,400:450,900:1000,2000:2100];
             obj.totalsamples=length(datavector);%ceil(length(obj.mocaplogsRA(:,1))-1);
@@ -125,13 +127,13 @@ classdef DataDrivenRA < handle
             obj.maxU2 = max(obj.U_full(2,:));
             obj.minU2= min(obj.U_full(2,:));
 
-            obj.numXGrids=1023;
-            obj.numYGrids=1023;
-            obj.numUGrids=1023;
-            obj.ndigits = ceil(log2((obj.numXGrids-1)^2));
-            obj.hX=linspace(-1,2.5,obj.numXGrids);%for 128 resolution
+            obj.numXGrids=29;
+            obj.numYGrids=29;
+            obj.numUGrids=29;
+            obj.ndigits = 29;
+            obj.hX=linspace( -2.073, 1.939,obj.numXGrids);%for 128 resolution
             [~,~,obj.binX]=histcounts(obj.xData(datavector),obj.hX);
-            obj.hY=linspace(-3,2,obj.numYGrids);%for 128 resolution
+            obj.hY=linspace( -3.017,2.075,obj.numYGrids);%for 128 resolution
             [~,~,obj.binY]=histcounts(obj.yData(datavector),obj.hY);
             obj.hU1=linspace(obj.minU1,obj.maxU1,obj.numUGrids);%for 128 resolution
             [~,~,obj.binU1]=histcounts(obj.U_full(1,:),obj.hU1);
@@ -140,16 +142,16 @@ classdef DataDrivenRA < handle
 
             points = [];
             for i =1:length(obj.xData(datavector))
-                for j =1:length(obj.xData(datavector))
-                    points = [points ;((obj.binY(i)-1)*obj.numXGrids + obj.binX(j))];
-                end
+               % for j =1:length(obj.xData(datavector))
+                    points = [points ;((obj.binY(i)-1)*obj.numXGrids + obj.binX(i))];
+              %  end
             end
 
             pointsU = [];
             for i =1:length(obj.U_full(1,:))
-                for j =1:length(obj.U_full(2,:))
-                    pointsU = [pointsU ;((obj.binU1(i)-1)*obj.numUGrids + obj.binU2(j))];
-                end
+               % for j =1:length(obj.U_full(2,:))
+                    pointsU = [pointsU ;((obj.binU1(i)-1)*obj.numUGrids + obj.binU2(i))];
+               % end
             end
             % convert to binary
 
@@ -187,10 +189,31 @@ classdef DataDrivenRA < handle
             obj.X_0TL = [dataBinary(:,1:end-1)];
             obj.X_1TL = [dataBinary(:,2:end)];
             obj.UL =  [UBinary(:,1:end-1)];
-            obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL);
+            obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL(:,1:100:102));
             obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
+            
+            XU=[obj.X_0TL ;obj.UL];%obj.X_0TL;
+            bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
+            [rows,cols] = size(bb);
+            invXUXUT = bb(:,cols/2+1:end);
 
-           %obj.AB = X_1TL * pinv([X_0TL]);
+            invXU= mod(XU'* invXUXUT,2);
+            mod(XU*invXU ,2)
+            obj.ABL = mod(obj.X_1TL* invXU,2);
+            obj.Aimp = importdata(strcat('logs/' ,'adjacency.csv' ));
+            for i =1:(size(obj.Aimp,1)-1)/2 
+                %swap rows
+                temp= obj.Aimp(i,:); 
+                obj.Aimp(i,:) = obj.Aimp(end-i+1,:); 
+                obj.Aimp(end-i+1,:)=temp;
+                %swap col
+            end
+            for i =1:(size(obj.Aimp,1)-1)/2 
+                temp= obj.Aimp(:,i); 
+                obj.Aimp(:,i) = obj.Aimp(:,end-i+1); 
+                obj.Aimp(:,end-i+1)=temp;
+            end
+            %xor(mod(obj.ABL*[obj.X_0TL(:,5);obj.UL(:,5)],2), obj.X_1TL(:,5))
         end
         
 
@@ -257,7 +280,10 @@ classdef DataDrivenRA < handle
                 R_logic{1} = R0;
                 
                 for i=1:steps
-                R_logic{i+1} = or((obj.AB(:,1:rowsR0)>quant) * R_logic{i},(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
+                %R_logic{i+1} = or((obj.AB(:,1:rowsR0)>quant) * R_logic{i},(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
+                %R_logic{i+1} = or(obj.ABL(:,1:rowsR0)* R_logic{i},obj.ABL(:,rowsR0+1:end)* obj.ULogicalZono);
+                %R_logic{i+1} = xor(obj.ABL(:,1:rowsR0)* R_logic{i} , obj.ABL(:,rowsR0+1:end)* obj.ULogicalZono);
+                R_logic{i+1} = obj.Aimp*R_logic{i};
                 %R_logic{i+1} = reduce(R_logic{i+1});
                 end
 
@@ -293,15 +319,25 @@ classdef DataDrivenRA < handle
                 end
 
                 Ydata = floor( (newdecPoints)./obj.numXGrids) +1;
-                [flag, index] = ismember(obj.numYGrids+1,Ydata);
-                if flag
-                    Ydata(index) = length(obj.hY);
+                %[flag, index] = ismember(obj.numYGrids+1,Ydata);
+                %[flag, index] = ismember(1,Ydata>obj.numYGrids);
+                for i =1:length(Ydata)
+                    if Ydata(i) > obj.numYGrids
+                        Ydata(i) = length(obj.hY);
+                    end
                 end
+
                 Xdata =  newdecPoints - obj.numXGrids.*(Ydata -1)    ;
-                [flag, index] = ismember(0,Xdata);
-                if flag
-                    Xdata(index) = 1;
+                for i =1:length(Xdata)
+                    if Xdata(i) > obj.numYGrids
+                        Xdata(i) = length(obj.hX);
+                    end
                 end
+                [flag, index] = ismember(1,Xdata>obj.numXGrids);
+                if flag
+                    Xdata(index) = length(obj.hX);
+                end
+
                 location{kk-1} = [obj.hX(Xdata) ; obj.hY(Ydata) ];
             end
         end
