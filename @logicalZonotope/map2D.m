@@ -16,18 +16,34 @@ for i =1:cols
     decPoints = [decPoints,d];
 end
 
-numXGrids=8192;
-numYGrids=8192;
-hX=linspace(min(decPoints)-4,max(decPoints)+4,numXGrids);%for 128 resolution
-hY=linspace(min(decPoints)-4,max(decPoints)+4,numYGrids);%for 128 resolution
+%adding one to avoid zeros
+decPoints = decPoints +1;
 
-Ydata = floor( (decPoints)./numXGrids) +1;
-
-
-[flag, index] = ismember(numYGrids+1,Ydata);
-if flag
-Ydata(index) = length(hY);
+ndigit= length(binaryPoints(:,1));
+if ndigit <5
+numXGrids=ndigit;
+numYGrids=ndigit;
+else
+numXGrids=127;
+numYGrids=127;
 end
+
+hX=linspace(1,max(decPoints)/2,numXGrids);%for 128 resolution
+hY=linspace(1,max(decPoints)/2,numYGrids);%for 128 resolution
+
+
+for i=1:length(decPoints)
+    if(rem(decPoints(i),numXGrids)==0)
+        Ydata(i) = decPoints(i)/numXGrids;
+    else
+        Ydata(i) = floor( decPoints(i)/numXGrids) +1;
+    end
+end
+
+% [flag, index] = ismember(numYGrids+1,Ydata);
+% if flag
+% Ydata(index) = length(hY);
+% end
 
 
 Xdata =  decPoints - numXGrids.*(Ydata -1);

@@ -45,45 +45,76 @@ function Zred = reduce(Z,varargin)
 
 %2 inputs
 
+cen = Z.c;
+gen = Z.G;
 
-[location2D , hX,hY,numXGrids]= map2D(Z);
-zCont= zonotope.enclosePoints(location2D,'stursberg');
-%zCont = reduce(zCont,'girard',3);
-vert = vertices(zCont);
-
-binaryVector = getGridIndex(vert);
-
-Zred = logicalZonotope.enclosePoints(binaryVector);
-
-
-
-function binaryVector = getGridIndex(locPoints)
-
-
-[~,~,binxR]=histcounts(locPoints(1,:),hX);
-[~,~,binyR]=histcounts(locPoints(2,:),hY);
-
-point = (binyR-1)*numXGrids + binxR;
-
-% convert to binary
-
-pointB = dec2bin(point);
-
-
-[rows,cols]=size(pointB);
-for i =1:rows
-    row=[];
-    for j =1:cols
-        if j==cols
-            row=[ row, pointB(i,j)];
+if ~isempty(gen)
+    points = evaluate(Z);
+    removeGen =[];
+    index=1;
+    genMat = unique(cell2mat(gen)','rows')';
+    gen= mat2cell(genMat,length(cen),ones(1,length(genMat(1,:))));
+    for i = 1:length(gen)
+        if gen{index} == cell2mat(gen)
+            break;
+        end
+        genMat=cell2mat(gen);
+        newgen = mat2cell(setdiff(genMat', gen{index}','rows')',length(cen),ones(1,length(gen(1,:))-1));
+        newZ = logicalZonotope(cen,newgen);
+        newPoints = evaluate(newZ);
+        if ismember(points',newPoints','rows')
+            removeGen =[removeGen i];
+            gen = newgen;
         else
-            row=[ row, pointB(i,j), ' '];
+            index= index +1;
         end
     end
-    newpointB(i,:) = row;
+    Zred = logicalZonotope(cen,gen);
+else
+    Zred = logicalZonotope(cen,{});
 end
-binaryVector=str2num(newpointB)';
 
-end
+
+
+% [location2D , hX,hY,numXGrids]= map2D(Z);
+% zCont= zonotope.enclosePoints(location2D,'stursberg');
+% %zCont = reduce(zCont,'girard',3);
+% vert = vertices(zCont);
+% vert = unique(vert','rows')';
+% binaryVector = getGridIndex(vert);
+% 
+% Zred = logicalZonotope.enclosePoints(binaryVector);
+% 
+% 
+% 
+% function binaryVector = getGridIndex(locPoints)
+% 
+% 
+% locPoints = locPoints-1;
+% [~,~,binxR]=histcounts(locPoints(1,:),hX);
+% [~,~,binyR]=histcounts(locPoints(2,:),hY);
+% 
+% point = (binyR+1)*numXGrids + binxR+1;
+% 
+% % convert to binary
+% 
+% pointB = dec2bin(point);
+% 
+% 
+% [rows,cols]=size(pointB);
+% for i =1:rows
+%     row=[];
+%     for j =1:cols
+%         if j==cols
+%             row=[ row, pointB(i,j)];
+%         else
+%             row=[ row, pointB(i,j), ' '];
+%         end
+%     end
+%     newpointB(i,:) = row;
+% end
+% binaryVector=str2num(newpointB)';
+% 
+% end
 end
 %------------- END OF CODE --------------

@@ -69,12 +69,16 @@ classdef DataDrivenRA < handle
         carLogModel;
         options;
         AB;
+        ABL;%logical AB
+        Aimp;%imported A
         UL;
         X_0TL;
         X_1TL;
         ndigits;
         dataStep;
         ULogicalZono;
+        maxPointsU;
+        maxPoints;
     end
 
     methods
@@ -96,9 +100,9 @@ classdef DataDrivenRA < handle
             obj.yData = obj.mocaplogsRA(:,6)+obj.dataNoiseStateFactor*rand(length(obj.mocaplogsRA(:,6)),1);
             obj.timeDataState = obj.mocaplogsRA(:,3);
             
-            obj.dataStep=10;
-            %datavector = [1:datastep:10,200:datastep:300,900:datastep:1000,2000:datastep:2100, 3000:datastep:3100];
-            datavector= 1:obj.dataStep:3000;%[1:2:10,400:450,900:1000,2000:2100];
+            obj.dataStep=1;
+            %datavector = [1:obj.dataStep:10,200:obj.dataStep:300,900:obj.dataStep:1000,2000:obj.dataStep:2100, 3000:obj.dataStep:3100];
+            datavector= 1:obj.dataStep:2500;%[1:2:10,400:450,900:1000,2000:2100];
             obj.totalsamples=length(datavector);%ceil(length(obj.mocaplogsRA(:,1))-1);
             
             obj.X_0T = [obj.xData(datavector),obj.yData(datavector)]';
@@ -125,13 +129,15 @@ classdef DataDrivenRA < handle
             obj.maxU2 = max(obj.U_full(2,:));
             obj.minU2= min(obj.U_full(2,:));
 
-            obj.numXGrids=1023;
-            obj.numYGrids=1023;
-            obj.numUGrids=1023;
-            obj.ndigits = ceil(log2((obj.numXGrids-1)^2));
-            obj.hX=linspace(obj.minXState-1,obj.maxXState+1,obj.numXGrids);%for 128 resolution
+            obj.numXGrids=20;
+            obj.numYGrids=20;
+            obj.numUGrids=20;
+            obj.ndigits = 29;
+            %obj.hX=linspace( -2.073, 1.939,obj.numXGrids);%for 128 resolution
+            obj.hX=linspace( -0.5, 1.939,obj.numXGrids);%for 128 resolution
             [~,~,obj.binX]=histcounts(obj.xData(datavector),obj.hX);
-            obj.hY=linspace(obj.minYState-1,obj.maxYState+1,obj.numYGrids);%for 128 resolution
+            %obj.hY=linspace( -3.017,2.075,obj.numYGrids);%for 128 resolution
+            obj.hY=linspace( -2,2,obj.numYGrids);
             [~,~,obj.binY]=histcounts(obj.yData(datavector),obj.hY);
             obj.hU1=linspace(obj.minU1,obj.maxU1,obj.numUGrids);%for 128 resolution
             [~,~,obj.binU1]=histcounts(obj.U_full(1,:),obj.hU1);
@@ -140,57 +146,108 @@ classdef DataDrivenRA < handle
 
             points = [];
             for i =1:length(obj.xData(datavector))
-                for j =1:length(obj.xData(datavector))
-                    points = [points ;((obj.binY(i)-1)*obj.numXGrids + obj.binX(j))];
-                end
+               % for j =1:length(obj.xData(datavector))
+                    points = [points ;((obj.binY(i)-1)*obj.numXGrids + obj.binX(i))];
+              %  end
             end
 
             pointsU = [];
             for i =1:length(obj.U_full(1,:))
-                for j =1:length(obj.U_full(2,:))
-                    pointsU = [pointsU ;((obj.binU1(i)-1)*obj.numUGrids + obj.binU2(j))];
-                end
+               % for j =1:length(obj.U_full(2,:))
+                    pointsU = [pointsU ;((obj.binU1(i)-1)*obj.numUGrids + obj.binU2(i))];
+               % end
             end
+
             % convert to binary
+            obj.maxPoints= max(points);
+            pointB = zeros(obj.maxPoints,length(points));
+            for i=1:length(points)
+                pointB(points(i),i) = 1;
+            end
+            II = eye(obj.maxPoints);
+            pointB = [pointB,II,];
+            pointB =unique(pointB','rows')';
 
-            pointB = dec2bin(points,obj.ndigits);
+
+            obj.maxPointsU= max(pointsU);
+            pointBU = zeros(obj.maxPointsU,length(pointsU));
+            for i=1:length(pointsU)
+                pointBU(pointsU(i),i) = 1;
+            end
             
-            [rows,cols]=size(pointB);
-            for i =1:rows
-                row=[];
-                for j =1:cols
-                    if j==cols
-                        row=[ row, pointB(i,j)];
-                    else
-                        row=[ row, pointB(i,j), ' '];
-                    end
-                end
-                newpointB(i,:) = row;
-            end
-            dataBinary=str2num(newpointB)';
+            %pointB = dec2bin(points,obj.ndigits);
+%             
+%             [rows,cols]=size(pointB);
+%             for i =1:rows
+%                 row=[];
+%                 for j =1:cols
+%                     if j==cols
+%                         row=[ row, pointB(i,j)];
+%                     else
+%                         row=[ row, pointB(i,j), ' '];
+%                     end
+%                 end
+%                 newpointB(i,:) = row;
+%             end
+%             dataBinary=str2num(newpointB)';
 
-            pointBU = dec2bin(pointsU,obj.ndigits);
-            [rows,cols]=size(pointBU);
-            for i =1:rows
-                row=[];
-                for j =1:cols
-                    if j==cols
-                        row=[ row, pointBU(i,j)];
-                    else
-                        row=[ row, pointBU(i,j), ' '];
-                    end
-                end
-                newpointBU(i,:) = row;
-            end
-            UBinary=str2num(newpointBU)';
+%             pointBU = dec2bin(pointsU,obj.ndigits);
+%             [rows,cols]=size(pointBU);
+%             for i =1:rows
+%                 row=[];
+%                 for j =1:cols
+%                     if j==cols
+%                         row=[ row, pointBU(i,j)];
+%                     else
+%                         row=[ row, pointBU(i,j), ' '];
+%                     end
+%                 end
+%                 newpointBU(i,:) = row;
+%             end
+%             UBinary=str2num(newpointBU)';
             maxnum = 1000;
-            obj.X_0TL = [dataBinary(:,1:end-1)];
-            obj.X_1TL = [dataBinary(:,2:end)];
-            obj.UL =  [UBinary(:,1:end-1)];
-            obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL);
-            obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
+            obj.X_0TL = [pointB(:,1:end-1)];
+            obj.X_1TL = [pointB(:,2:end)];
+            obj.UL =  [pointBU(:,1:end-1)];
+            obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL(:,1:100:102));
+            %obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
+            XU = [obj.X_0TL];
+            bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
+            [rows,cols] = size(bb);
+            invX0X0 = bb(:,cols/2+1:end);
+            invX0 = mod(XU'* invX0X0,2);
+            iseye= isequal(mod(XU*invX0,2), eye(size(XU*invX0, 1)))
 
-           %obj.AB = X_1TL * pinv([X_0TL]);
+            XU = [obj.UL];
+            bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
+            [rows,cols] = size(bb);
+            invX0X0 = bb(:,cols/2+1:end);
+            invU0 = mod(XU'* invX0X0,2);
+            iseye= isequal(mod(XU*invU0,2), eye(size(XU*invU0, 1)))
+
+            obj.ABL =  mod(obj.X_1TL*invX0,2);
+%             XU=[obj.X_0TL ;obj.UL];%obj.X_0TL;
+%             bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
+%             [rows,cols] = size(bb);
+%             invXUXUT = bb(:,cols/2+1:end);
+% 
+%             invXU= mod(XU'* invXUXUT,2);
+%             mod(XU*invXU ,2)
+%             obj.ABL = mod(obj.X_1TL* invXU,2);
+%             obj.Aimp = importdata(strcat('logs/' ,'adjacency.csv' ));
+%             for i =1:(size(obj.Aimp,1)-1)/2 
+%                 %swap rows
+%                 temp= obj.Aimp(i,:); 
+%                 obj.Aimp(i,:) = obj.Aimp(end-i+1,:); 
+%                 obj.Aimp(end-i+1,:)=temp;
+%                 %swap col
+%             end
+%             for i =1:(size(obj.Aimp,1)-1)/2 
+%                 temp= obj.Aimp(:,i); 
+%                 obj.Aimp(:,i) = obj.Aimp(:,end-i+1); 
+%                 obj.Aimp(:,end-i+1)=temp;
+%             end
+            %xor(mod(obj.ABL*[obj.X_0TL(:,5);obj.UL(:,5)],2), obj.X_1TL(:,5))
         end
         
 
@@ -243,49 +300,85 @@ classdef DataDrivenRA < handle
             binaryVector = getGridIndex(obj,loc);
             R0 = logicalZonotope.enclosePoints(binaryVector);
             %R_logic=R0;
-            %Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
-            if isempty(R0.c)
+            %%%Ulog = logicalZonotope(obj.UL(:,1:end-1),[]);
+            if ~isempty(R0.c)
                 [rowsR0, colsR0]= size(R0.c);
+            else
+                [rowsR0, colsR0]= size(R0.G{1});
             end
             
-            if obj.ndigits == rowsR0
+            %if obj.ndigits == rowsR0
                 %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
-                halfWay = obj.hX(ceil(length(obj.hX)/2));
-                quant = 0.2;
-                R_logic = or((obj.AB(:,1:rowsR0)>quant) * R0,(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
-            else
-                R_logic=R0;
-                disp("error number of bits")
-            end
+                %halfWay = obj.hX(ceil(length(obj.hX)/2));
+                quant = 0.04;
+                R_logic{1} = R0;
+                
+                for i=1:steps
+                %R_logic{i+1} = or((obj.AB(:,1:rowsR0)>quant) * R_logic{i},(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
+                %R_logic{i+1} = or(obj.ABL(:,1:rowsR0)* R_logic{i},obj.ABL(:,rowsR0+1:end)* obj.ULogicalZono);
+                %R_logic{i+1} = xor(obj.ABL(:,1:rowsR0)* R_logic{i} , obj.ABL(:,rowsR0+1:end)* obj.ULogicalZono);
+                %R_logic{i+1} = obj.Aimp*R_logic{i};
+                %R_logic{i+1} = semiKron(obj.ABL,semiKron(obj.ULogicalZono,R_logic{i}));
+                R_logic{i+1} = semiKron(obj.ABL,R_logic{i});
+                %R_logic{i+1} = reduce(R_logic{i+1});
+                end
+
+%             else
+%                 R_logic=R0;
+%                 disp("error number of bits")
+%             end
 
             %R1=R0;
         end
 
         function  location=getPoints(obj,R_logic)
-            binaryPoints=evaluate(R_logic);
-            [rows,cols]=size(binaryPoints);
-            decPoints=[];
-            for i =1:cols
-               strPoint= num2str( binaryPoints(:,i) );
-               temp='';
-               for j =1:length(strPoint)
-                    temp = strcat(temp,strPoint(j));
-               end
-               d=bin2dec( temp );
-               decPoints = [decPoints,d];
-            end
-            % grid number to (x,y)
-            % remove zeros added by enclose points
-            newdecPoints=[];
-            for i=1:length(decPoints)
-                if(decPoints(i) ~=0)
-                    newdecPoints=[ newdecPoints decPoints(i)];
+            for kk=2:length(R_logic)
+                binaryPoints=evaluate(R_logic{kk});
+                [rows,cols]=size(binaryPoints);
+                decPoints=[];
+                for i =1:cols
+                   decPoints = [decPoints, find(binaryPoints(:,i)==1)];
                 end
-            end
+%                     strPoint= num2str( binaryPoints(:,i) );
+%                     temp='';
+%                     for j =1:length(strPoint)
+%                         temp = strcat(temp,strPoint(j));
+%                     end
+%                     
+%                     d=bin2dec( temp );
+%                     decPoints = [decPoints,d];
+                
+                % grid number to (x,y)
+                % remove zeros added by enclose points
+                newdecPoints=[];
+                for i=1:length(decPoints)
+                    if(decPoints(i) ~=0)
+                        newdecPoints=[ newdecPoints decPoints(i)];
+                    end
+                end
 
-             Ydata = floor( (newdecPoints)./obj.numXGrids) +1;
-             Xdata =  newdecPoints - obj.numXGrids.*(Ydata -1)    ;
-             location = [obj.hX(Xdata) ; obj.hY(Ydata) ];
+                Ydata = floor( (newdecPoints)./obj.numXGrids) +1;
+                %[flag, index] = ismember(obj.numYGrids+1,Ydata);
+                %[flag, index] = ismember(1,Ydata>obj.numYGrids);
+                for i =1:length(Ydata)
+                    if Ydata(i) > obj.numYGrids
+                        Ydata(i) = length(obj.hY);
+                    end
+                end
+
+                Xdata =  newdecPoints - obj.numXGrids.*(Ydata -1)    ;
+                for i =1:length(Xdata)
+                    if Xdata(i) > obj.numYGrids
+                        Xdata(i) = length(obj.hX);
+                    end
+                end
+                [flag, index] = ismember(1,Xdata>obj.numXGrids);
+                if flag
+                    Xdata(index) = length(obj.hX);
+                end
+
+                location{kk-1} = [obj.hX(Xdata) ; obj.hY(Ydata) ];
+            end
         end
 
         function binaryVector = getGridIndex(obj,locPoints)
@@ -298,22 +391,26 @@ classdef DataDrivenRA < handle
 
             % convert to binary
 
-            pointB = dec2bin(point,obj.ndigits);
             
-
-            [rows,cols]=size(pointB);
-            for i =1:rows
-                row=[];
-                for j =1:cols
-                    if j==cols
-                        row=[ row, pointB(i,j)];
-                    else
-                        row=[ row, pointB(i,j), ' '];
-                    end
-                end
-                newpointB(i,:) = row;
+            pointB = zeros(obj.maxPoints,length(point));
+            for i=1:length(point)
+                pointB(point(i),i) = 1;
             end
-            binaryVector=str2num(newpointB)';
+            binaryVector = pointB;
+%pointB = dec2bin(point,obj.ndigits);
+%             [rows,cols]=size(pointB);
+%             for i =1:rows
+%                 row=[];
+%                 for j =1:cols
+%                     if j==cols
+%                         row=[ row, pointB(i,j)];
+%                     else
+%                         row=[ row, pointB(i,j), ' '];
+%                     end
+%                 end
+%                 newpointB(i,:) = row;
+%             end
+%             binaryVector=str2num(newpointB)';
 
         end
 

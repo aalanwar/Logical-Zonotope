@@ -98,7 +98,7 @@ elseif ~isa(ZB,'logicalZonotope')
     %Ccen = mod(kron(A,eye(alpha/n)) * kron(ZB.c,eye(alpha/p)),2);
 
     for i =1:length(A.G)
-        Cgen{i} = (kron(A.G{i},eye(alpha/n)) * kron(ZB,eye(alpha/p)) );%>1;
+        Cgen{i} = (kron(A,eye(alpha/n)) * kron(ZB.G{i},eye(alpha/p)) );%>1;
         %Cgen{i} = mtimesAndOr(kron(A,eye(alpha/n)) , kron(ZB.G{i},eye(alpha/p)));
         %Cgen{i} = mod(kron(A,eye(alpha/n)) * kron(ZB.G{i},eye(alpha/p)),2);
         

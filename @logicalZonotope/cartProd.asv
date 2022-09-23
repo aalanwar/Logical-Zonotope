@@ -53,17 +53,17 @@ elseif(isempty(Z2.G) & isempty(Z2.G))
 elseif(~isempty(Z2.G) & ~isempty(Z2.G))
     g1Len = length(Z1.G);
     g2Len = length(Z2.G);
-    sizeOfGen1 = length(Z1.G{1});
-    sizeOfGen2 = length(Z2.G{1});
+    sizeOfCen = length(newCen);
+
     
     for i =1:g1Len
-        newGen{i} = [Z1.G{i};zeros(sizeOfGen2,1)];
+        newGen{i} = [Z1.G{i};
     end
 
 
     index =1;
     for i=g1Len+1:g1Len+g2Len
-        newGen{i} =  [zeros(sizeOfGen1,1);Z2.G{index}];
+        newGen{i} =  Z2.G{index};
         index = index +1;
     end
 end

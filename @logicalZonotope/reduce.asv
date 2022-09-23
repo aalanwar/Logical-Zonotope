@@ -1,13 +1,13 @@
-function Zred = reduce(Z,option,varargin)
+function Zred = reduce(Z,varargin)
 % reduce - Reduces the order of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Zred = reduce(Z,option,order)
 %
 % Inputs:
 %    Z - zonotope object
 %    option - string specifying the reduction method. The available options
-%             are: 
+%             are:
 %                   - 'cluster'         Sec. III.B in [3]
 %                   - 'combastel'       Sec. 3.2 in [4]
 %                   - 'constOpt'        Sec. III.D in [3]
@@ -23,7 +23,7 @@ function Zred = reduce(Z,option,varargin)
 % Outputs:
 %    Zred - reduced zonotope
 %
-% Example: 
+% Example:
 %    Z=zonotope(rand(2,10));
 %    plot(Z,[1,2],'g');
 %    hold on
@@ -32,26 +32,11 @@ function Zred = reduce(Z,option,varargin)
 %    Zred=reduce(Z,'combastel',2);
 %    plot(Zred,[1,2],'b');
 %
-% References:
-%    [1] M. Althoff. "Reachability analysis and its application to the 
-%        safety assessment of autonomous cars", 2010
-%    [2] A. Girard. "Reachability of uncertain linear systems using
-%        zonotopes". 2005
-%    [3] A. Kopetzki et al. "Methods for order reduction of zonotopes", 
-%        CDC 2017
-%    [4] C. Combastel. "A state bounding observer based on zonotopes",
-%        ECC 2003
-%    [5] J. Scott et al. "Constrained zonotopes: A new tool for set-based 
-%        estimation and fault detection", Automatica 2016
-%
-% Other m-files required: none
-% Subfunctions: see below
-% MAT-files required: none
 %
 % See also: none
 
 % Author:        Matthias Althoff
-% Written:       24-January-2007 
+% Written:       24-January-2007
 % Last update:   15-September-2007
 %                27-June-2018
 % Last revision: ---
@@ -59,19 +44,72 @@ function Zred = reduce(Z,option,varargin)
 %------------- BEGIN CODE --------------
 
 %2 inputs
-dim = length(Z.c);
-numXGrids=511;
-numYGrids=511;
-ndigits = dim;
-hX=linspace(0,2^dim-1,numXGrids);%for 128 resolution
-hY=linspace(0,2^dim-1,numYGrids);%for 128 resolution
 
-location2D= map2D(Z);
-zCont= zonotope.enclosePoints(location2D);
-vert = vertices(zCont);
-[~,~,binX]=histcounts(vert(1,:),hX);
-[~,~,binY]=histcounts(vert(2,:),hY);
+cen = Z.c;
+gen = Z.G;
+
+points = evaluate(Z);
+removeGen =[];
+index=1;
+genMat = unique(cell2mat(gen)','rows')';
+gen= mat2cell(genMat,length(cen),ones(1,length(genMat(1,:))));
+for i = 1:length(gen)
+    if gen{index} == cell2mat(gen)  
+     break;
+    end    
+    genMatcell2mat(gen);
+    newgen = mat2cell(setdiff(genMat', gen{index}','rows')',length(cen),ones(1,length(gen(1,:))-1));
+    newZ = logicalZonotope(cen,newgen);
+    newPoints = evaluate(newZ);
+    if ismember(points',newPoints','rows')
+        removeGen =[removeGen i];
+        gen = newgen;
+    else
+        index= index +1;
+    end
+end
+Zred = logicalZonotope(cen,gen);
 
 
-
+% [location2D , hX,hY,numXGrids]= map2D(Z);
+% zCont= zonotope.enclosePoints(location2D,'stursberg');
+% %zCont = reduce(zCont,'girard',3);
+% vert = vertices(zCont);
+% vert = unique(vert','rows')';
+% binaryVector = getGridIndex(vert);
+% 
+% Zred = logicalZonotope.enclosePoints(binaryVector);
+% 
+% 
+% 
+% function binaryVector = getGridIndex(locPoints)
+% 
+% 
+% locPoints = locPoints-1;
+% [~,~,binxR]=histcounts(locPoints(1,:),hX);
+% [~,~,binyR]=histcounts(locPoints(2,:),hY);
+% 
+% point = (binyR+1)*numXGrids + binxR+1;
+% 
+% % convert to binary
+% 
+% pointB = dec2bin(point);
+% 
+% 
+% [rows,cols]=size(pointB);
+% for i =1:rows
+%     row=[];
+%     for j =1:cols
+%         if j==cols
+%             row=[ row, pointB(i,j)];
+%         else
+%             row=[ row, pointB(i,j), ' '];
+%         end
+%     end
+%     newpointB(i,:) = row;
+% end
+% binaryVector=str2num(newpointB)';
+% 
+% end
+end
 %------------- END OF CODE --------------

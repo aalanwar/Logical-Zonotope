@@ -77,8 +77,6 @@ classdef DataDrivenRA < handle
         ndigits;
         dataStep;
         ULogicalZono;
-        maxPointsU;
-        maxPoints;
     end
 
     methods
@@ -102,7 +100,7 @@ classdef DataDrivenRA < handle
             
             obj.dataStep=1;
             %datavector = [1:obj.dataStep:10,200:obj.dataStep:300,900:obj.dataStep:1000,2000:obj.dataStep:2100, 3000:obj.dataStep:3100];
-            datavector= 1:obj.dataStep:2500;%[1:2:10,400:450,900:1000,2000:2100];
+            datavector= 1:obj.dataStep:3000;%[1:2:10,400:450,900:1000,2000:2100];
             obj.totalsamples=length(datavector);%ceil(length(obj.mocaplogsRA(:,1))-1);
             
             obj.X_0T = [obj.xData(datavector),obj.yData(datavector)]';
@@ -129,9 +127,9 @@ classdef DataDrivenRA < handle
             obj.maxU2 = max(obj.U_full(2,:));
             obj.minU2= min(obj.U_full(2,:));
 
-            obj.numXGrids=10;
-            obj.numYGrids=10;
-            obj.numUGrids=10;
+            obj.numXGrids=29;
+            obj.numYGrids=29;
+            obj.numUGrids=29;
             obj.ndigits = 29;
             obj.hX=linspace( -2.073, 1.939,obj.numXGrids);%for 128 resolution
             [~,~,obj.binX]=histcounts(obj.xData(datavector),obj.hX);
@@ -155,96 +153,66 @@ classdef DataDrivenRA < handle
                     pointsU = [pointsU ;((obj.binU1(i)-1)*obj.numUGrids + obj.binU2(i))];
                % end
             end
-
             % convert to binary
-            obj.maxPoints= max(points);
-            pointB = zeros(obj.maxPoints,length(points));
-            for i=1:length(points)
-                pointB(points(i),i) = 1;
-            end
-            %II = eye(obj.maxPoints);
-            pointB = [pointB];
-            %pointB =unique(pointB','rows')';
 
-
-            obj.maxPointsU= max(pointsU);
-            pointBU = zeros(obj.maxPointsU,length(pointsU));
-            for i=1:length(pointsU)
-                pointBU(pointsU(i),i) = 1;
-            end
+            pointB = dec2bin(points,obj.ndigits);
             
-            %pointB = dec2bin(points,obj.ndigits);
-%             
-%             [rows,cols]=size(pointB);
-%             for i =1:rows
-%                 row=[];
-%                 for j =1:cols
-%                     if j==cols
-%                         row=[ row, pointB(i,j)];
-%                     else
-%                         row=[ row, pointB(i,j), ' '];
-%                     end
-%                 end
-%                 newpointB(i,:) = row;
-%             end
-%             dataBinary=str2num(newpointB)';
+            [rows,cols]=size(pointB);
+            for i =1:rows
+                row=[];
+                for j =1:cols
+                    if j==cols
+                        row=[ row, pointB(i,j)];
+                    else
+                        row=[ row, pointB(i,j), ' '];
+                    end
+                end
+                newpointB(i,:) = row;
+            end
+            dataBinary=str2num(newpointB)';
 
-%             pointBU = dec2bin(pointsU,obj.ndigits);
-%             [rows,cols]=size(pointBU);
-%             for i =1:rows
-%                 row=[];
-%                 for j =1:cols
-%                     if j==cols
-%                         row=[ row, pointBU(i,j)];
-%                     else
-%                         row=[ row, pointBU(i,j), ' '];
-%                     end
-%                 end
-%                 newpointBU(i,:) = row;
-%             end
-%             UBinary=str2num(newpointBU)';
+            pointBU = dec2bin(pointsU,obj.ndigits);
+            [rows,cols]=size(pointBU);
+            for i =1:rows
+                row=[];
+                for j =1:cols
+                    if j==cols
+                        row=[ row, pointBU(i,j)];
+                    else
+                        row=[ row, pointBU(i,j), ' '];
+                    end
+                end
+                newpointBU(i,:) = row;
+            end
+            UBinary=str2num(newpointBU)';
             maxnum = 1000;
-            obj.X_0TL = [pointB(:,1:end-1)];
-            obj.X_1TL = [pointB(:,2:end)];
-            obj.UL =  [pointBU(:,1:end-1)];
+            obj.X_0TL = [dataBinary(:,1:end-1)];
+            obj.X_1TL = [dataBinary(:,2:end)];
+            obj.UL =  [UBinary(:,1:end-1)];
             obj.ULogicalZono = logicalZonotope.enclosePoints(obj.UL(:,1:100:102));
-            %obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
-            XU = [obj.X_0TL];
+            obj.AB = obj.X_1TL * pinv([obj.X_0TL;obj.UL ]);
+            
+            XU=[obj.X_0TL ;obj.UL];%obj.X_0TL;
             bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
             [rows,cols] = size(bb);
-            invX0X0 = bb(:,cols/2+1:end);
-            invX0 = mod(XU'* invX0X0,2);
-            iseye= isequal(mod(XU*invX0,2), eye(size(XU*invX0, 1)))
+            invXUXUT = bb(:,cols/2+1:end);
 
-            XU = [obj.UL];
-            bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
-            [rows,cols] = size(bb);
-            invX0X0 = bb(:,cols/2+1:end);
-            invU0 = mod(XU'* invX0X0,2);
-            iseye= isequal(mod(XU*invU0,2), eye(size(XU*invU0, 1)))
-
-            obj.ABL =  mod(obj.X_1TL*invX0,2);
-%             XU=[obj.X_0TL ;obj.UL];%obj.X_0TL;
-%             bb=invBol([mod(XU*XU',2),eye(size(mod(XU*XU',2)))]);
-%             [rows,cols] = size(bb);
-%             invXUXUT = bb(:,cols/2+1:end);
-% 
-%             invXU= mod(XU'* invXUXUT,2);
-%             mod(XU*invXU ,2)
-%             obj.ABL = mod(obj.X_1TL* invXU,2);
-%             obj.Aimp = importdata(strcat('logs/' ,'adjacency.csv' ));
-%             for i =1:(size(obj.Aimp,1)-1)/2 
-%                 %swap rows
-%                 temp= obj.Aimp(i,:); 
-%                 obj.Aimp(i,:) = obj.Aimp(end-i+1,:); 
-%                 obj.Aimp(end-i+1,:)=temp;
-%                 %swap col
-%             end
-%             for i =1:(size(obj.Aimp,1)-1)/2 
-%                 temp= obj.Aimp(:,i); 
-%                 obj.Aimp(:,i) = obj.Aimp(:,end-i+1); 
-%                 obj.Aimp(:,end-i+1)=temp;
-%             end
+            invXU= mod(XU'* invXUXUT,2);
+            mod(XU*invXU ,2)
+            obj.ABL = mod(obj.X_1TL* invXU,2);
+            obj.Aimp = importdata(strcat('logs/' ,'adjacency.csv' ));
+            for i =1:(size(obj.Aimp,1)-1)/2 
+                %swap rows
+                temp= obj.Aimp(i,:); 
+                obj.Aimp(i,:) = obj.Aimp(end-i+1,:); 
+                obj.Aimp(end-i+1,:)=temp;
+                %swap col
+            end
+            for i =1:(size(obj.Aimp,1)-1)/2 
+                temp= obj.Aimp(:,i); 
+                obj.Aimp(:,i) = obj.Aimp(:,end-i+1); 
+                obj.Aimp(:,end-i+1)=temp;
+            end
             %xor(mod(obj.ABL*[obj.X_0TL(:,5);obj.UL(:,5)],2), obj.X_1TL(:,5))
         end
         
@@ -305,7 +273,7 @@ classdef DataDrivenRA < handle
                 [rowsR0, colsR0]= size(R0.G{1});
             end
             
-            %if obj.ndigits == rowsR0
+            if obj.ndigits == rowsR0
                 %R1 = (obj.AB(1:rowsR0,1:rowsR0)>0.7) * R0;
                 %halfWay = obj.hX(ceil(length(obj.hX)/2));
                 quant = 0.04;
@@ -315,16 +283,14 @@ classdef DataDrivenRA < handle
                 %R_logic{i+1} = or((obj.AB(:,1:rowsR0)>quant) * R_logic{i},(obj.AB(:,rowsR0+1:end)>quant)* obj.ULogicalZono);
                 %R_logic{i+1} = or(obj.ABL(:,1:rowsR0)* R_logic{i},obj.ABL(:,rowsR0+1:end)* obj.ULogicalZono);
                 %R_logic{i+1} = xor(obj.ABL(:,1:rowsR0)* R_logic{i} , obj.ABL(:,rowsR0+1:end)* obj.ULogicalZono);
-                %R_logic{i+1} = obj.Aimp*R_logic{i};
-                %R_logic{i+1} = semiKron(obj.ABL,semiKron(obj.ULogicalZono,R_logic{i}));
-                R_logic{i+1} = semiKron(obj.ABL,R_logic{i});
+                R_logic{i+1} = obj.Aimp*R_logic{i};
                 %R_logic{i+1} = reduce(R_logic{i+1});
                 end
 
-%             else
-%                 R_logic=R0;
-%                 disp("error number of bits")
-%             end
+            else
+                R_logic=R0;
+                disp("error number of bits")
+            end
 
             %R1=R0;
         end
@@ -335,19 +301,14 @@ classdef DataDrivenRA < handle
                 [rows,cols]=size(binaryPoints);
                 decPoints=[];
                 for i =1:cols
-                    if any(binaryPoints(:,i)==1)
-                      decPoints = [decPoints, find(binaryPoints(:,i)==1)'];
+                    strPoint= num2str( binaryPoints(:,i) );
+                    temp='';
+                    for j =1:length(strPoint)
+                        temp = strcat(temp,strPoint(j));
                     end
+                    d=bin2dec( temp );
+                    decPoints = [decPoints,d];
                 end
-%                     strPoint= num2str( binaryPoints(:,i) );
-%                     temp='';
-%                     for j =1:length(strPoint)
-%                         temp = strcat(temp,strPoint(j));
-%                     end
-%                     
-%                     d=bin2dec( temp );
-%                     decPoints = [decPoints,d];
-                
                 % grid number to (x,y)
                 % remove zeros added by enclose points
                 newdecPoints=[];
@@ -391,26 +352,22 @@ classdef DataDrivenRA < handle
 
             % convert to binary
 
+            pointB = dec2bin(point,obj.ndigits);
             
-            pointB = zeros(obj.maxPoints,length(point));
-            for i=1:length(point)
-                pointB(point(i),i) = 1;
+
+            [rows,cols]=size(pointB);
+            for i =1:rows
+                row=[];
+                for j =1:cols
+                    if j==cols
+                        row=[ row, pointB(i,j)];
+                    else
+                        row=[ row, pointB(i,j), ' '];
+                    end
+                end
+                newpointB(i,:) = row;
             end
-            binaryVector = pointB;
-%pointB = dec2bin(point,obj.ndigits);
-%             [rows,cols]=size(pointB);
-%             for i =1:rows
-%                 row=[];
-%                 for j =1:cols
-%                     if j==cols
-%                         row=[ row, pointB(i,j)];
-%                     else
-%                         row=[ row, pointB(i,j), ' '];
-%                     end
-%                 end
-%                 newpointB(i,:) = row;
-%             end
-%             binaryVector=str2num(newpointB)';
+            binaryVector=str2num(newpointB)';
 
         end
 

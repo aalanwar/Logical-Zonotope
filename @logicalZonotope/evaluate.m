@@ -37,32 +37,59 @@ function points = evaluate(Z1)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-
+points = [];
 if ~isempty(Z1.G)
 numOfgen = length( Z1.G );
+L=2^numOfgen;
+%T = zeros(L,N);
+for i=1:L
 
+   table = de2bi(i-1,numOfgen,'left-msb');
 
-
-points = [];
-%for o=1:numOfgen
-%for k=1:numOfgen
-    
-
-table=truth_table(numOfgen);
-[rowsTable,colsTable]=size(table);
-for i =1:rowsTable
-
-    % [rowsGen,colsGen]=size(gen1);
-    onePoint=[ table(i,1)&Z1.G{1}];
+    onePoint=[ table(1,1)&Z1.G{1}];
     for j=2:numOfgen
-        onePoint =xor( onePoint, (table(i,j)&Z1.G{j}) );
+        onePoint =xor( onePoint, (table(1,j)&Z1.G{j}) );
     end
     if ~isempty(Z1.c)
         points = [ points xor(Z1.c,onePoint)];
     else
         points = [ points onePoint];
-    end
+    end   
 end
+
+%   pointB = dec2bin(i-1,numOfgen);
+%    [rows,cols]=size(pointB);
+%    row=[];
+%    for j =1:cols
+%        if j==cols
+%            row=[ row, pointB(j)];
+%        else
+%            row=[ row, pointB(j), ' '];
+%        end
+%    end
+%    table=str2num(row);
+
+
+% points = [];
+% %for o=1:numOfgen
+% %for k=1:numOfgen
+%     
+% 
+% table=truth_table(numOfgen);
+% [rowsTable,colsTable]=size(table);
+% for i =1:rowsTable
+% 
+%     % [rowsGen,colsGen]=size(gen1);
+%     onePoint=[ table(i,1)&Z1.G{1}];
+%     for j=2:numOfgen
+%         onePoint =xor( onePoint, (table(i,j)&Z1.G{j}) );
+%     end
+%     if ~isempty(Z1.c)
+%         points = [ points xor(Z1.c,onePoint)];
+%     else
+%         points = [ points onePoint];
+%     end
+% end
 else
 points = Z1.c;
 end
