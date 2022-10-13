@@ -27,6 +27,17 @@ function Z = and(Z1,Z2,varargin)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+if ~isa(Z1,'logicalZonotope') 
+Z1=logicalZonotope.enclosePoints(Z1);
+
+end
+
+if ~isa(Z2,'logicalZonotope') 
+Z2=logicalZonotope.enclosePoints(Z2);
+
+end
+
 if(~isempty(Z1.c) & ~isempty(Z2.c))
 newcen = Z1.c & Z2.c;
 else

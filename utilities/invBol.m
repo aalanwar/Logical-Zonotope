@@ -53,7 +53,8 @@ while i <= m && j <= n
       % Subtract multiples of the pivot row from all the other rows.
       for k = [1:i-1 i+1:m]
         % A(k,j:n) = A(k,j:n) - A(k,j).*A(i,j:n);
-        A(k,j:n) = xor(A(k,j:n) , A(k,j)&A(i,j:n));
+        %A(k,j:n) = xor(A(k,j:n) , A(k,j)&A(i,j:n));
+        A(k,j:n) = mod(A(k,j:n) + (A(k,j).*A(i,j:n)),2);
       end
       i = i + 1;
       j = j + 1;

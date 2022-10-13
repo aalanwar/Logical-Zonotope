@@ -37,8 +37,18 @@ function Z = or(Z1,Z2)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+if ~isa(Z1,'logicalZonotope') 
+Z1=logicalZonotope.enclosePoints(Z1);
+end
+
+if ~isa(Z2,'logicalZonotope') 
+Z2=logicalZonotope.enclosePoints(Z2);
+end
+
 [crows1,~] = size(Z1.c);
 [crows2,~] = size(Z2.c);
+Z1 = reduce(Z1);
+Z2 = reduce(Z2);
 
 done=0;
 if ~isempty( Z1.G)

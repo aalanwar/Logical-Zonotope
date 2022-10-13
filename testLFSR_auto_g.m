@@ -1,7 +1,7 @@
 
 clear all
 close all
-%rng(254)
+rng(254)
 
 Aleng = 60;
 for i =1:Aleng
@@ -41,6 +41,8 @@ disp('start')
 index=index+1;
 setIndex =1;
 compA=truth_table(setIndex);
+
+tic
 for j =1:length(compA(:,1))
     for i=1:setIndex
         testA{i} = logicalZonotope.enclosePoints(compA(j,i));
@@ -109,24 +111,24 @@ for j =1:length(compA(:,1))
     
     
 
-    sum=0;
-    for i =1:Aleng
-        sum = sum + abs(tempA{i}-A{i}) ;
-    end
-    %if sum == 0
-    sprintf("sum key =%d , j =%d ",sum,j)
-    %end
-
-    [testz2,~]  =LFSR1(tempA,numOfmessages);
-    sum2=0;
-    for i =1:numOfmessages
-        cRecover{i}= xor(testz2{i},m{i});
-        sum2 = sum2 + abs(cRecover{i} - c{i});
-    end
-    sprintf("sum message =%d",sum2)
+%     sum=0;
+%     for i =1:Aleng
+%         sum = sum + abs(tempA{i}-A{i}) ;
+%     end
+%     %if sum == 0
+%     sprintf("sum key =%d , j =%d ",sum,j)
+%     %end
+% 
+%     [testz2,~]  =LFSR1(tempA,numOfmessages);
+%     sum2=0;
+%     for i =1:numOfmessages
+%         cRecover{i}= xor(testz2{i},m{i});
+%         sum2 = sum2 + abs(cRecover{i} - c{i});
+%     end
+%     sprintf("sum message =%d",sum2)
 
 end
-
+execTime = toc
 
 
 

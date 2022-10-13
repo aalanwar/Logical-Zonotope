@@ -1,4 +1,4 @@
-function Z = enclosePoints(points,varargin)
+function Z = enclosePoints2(points,varargin)
 % enclosePoints - enclose a point cloud with a zonotope
 %
 % Syntax:  
@@ -51,33 +51,33 @@ cen = points(:,1);
 if numOfPoints > 1
     containsZeroFlag=0;
     newPoints = [];
-   for i =1:numOfPoints
-       
+    for i =1:numOfPoints
         if points(:,i) == zeros(dim,1)
             containsZeroFlag =1;
-            saveI = i;
-            break;
-
-            els
+        else
+            newPoints =[newPoints points(:,i)];
         end
-   end
-    
-   if containsZeroFlag ==1
-       cen = points(:,saveI);
-       for i =1:numOfPoints
-           if i==saveI
-              
-           else
-               gen{index} = xor(cen,points(:,i));
-               index = index +1;
-           end
-       end
-   else
-       index =1;
-       for i =2:numOfPoints
-           gen{index} = xor(cen,points(:,i));
-           index = index +1;
-       end
+    end
+    gen ={};
+    if containsZeroFlag ==1
+        cen = zeros(dim,1);
+        index =1;
+        for i =1:numOfPoints-1           
+            tempZ = logicalZonotope(cen,gen);
+            if(~tempZ.containsPoint(newPoints(:,i)))
+                gen{index} =newPoints(:,i);
+                index = index +1;
+            end
+        end
+    else
+        index =1;
+        for i =2:numOfPoints
+            tempZ = logicalZonotope(cen,gen);
+            if(~tempZ.containsPoint(points(:,i)))
+                gen{index} = xor(cen,points(:,i));
+                index = index +1;
+            end
+        end
    end
     Z =logicalZonotope(cen,gen);
 else

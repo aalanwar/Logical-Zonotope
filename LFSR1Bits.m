@@ -1,4 +1,4 @@
-function [z,A] = LFSR1(A,N)
+function [z,A] = LFSR1Bits(A,N)
 %TRIVIUM Summary of this function goes here
 %   Detailed explanation goes here
 
