@@ -1,6 +1,26 @@
 
-# logical Zonotope
+# Logical Zonotope: A Set Representation for Binary Vectors
 
- Run Logical_Zono_XOR.m for logical circuits <br /><br />
+This repo cotains the code for our paper:
+Logical Zonotope: A Set Representation for Binary Vectors
+Authors: Amr Alanwar, Frank J. Jiang, Samy Amin and Karl Henrik Johansson 
 
-Run run_CAR_logic.m for using real data and car simulator <br /><br />
+## Running 
+1- Add the repo folder and subfolders to the Matlab path.  <br />
+2- Run FindLFSRkeyExample.m for Example 1 in the paper  <br /><br />
+4- Run VechIntersectionExample.m for Example 2 in the paper <br /><br />
+5- Run BoolFunctionExample.m for Example 3 in the paper <br /><br />
+<br/> 
+
+
+
+```
+@article{logicalZonotope,
+  title={Logical Zonotope: A Set Representation for Binary Vectors},
+  author={Alanwar, Amr and Jiang, Frank J. and Amin, Samy and Johansson, Karl Henrik},
+  journal={arXiv preprint },
+  year={2022}
+}
+```
+
+
