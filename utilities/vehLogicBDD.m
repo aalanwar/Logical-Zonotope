@@ -1,11 +1,12 @@
-function [VPn,CFn] = vehLogicZono(U,VP,CF)
+function [VPn,CFn] = vehLogicBDD(U,VP,CF)
 
 VPn{1} = U{1} & not(VP{1}) & not(CF{1}) ;
 VPn{2} = U{2} & not(VP{2}) & not(CF{2}) ;
-CFn{1} =and(or(and( not(VP{1}),VPn{1}) ,U{3}),not(VPn{1}));
-CFn{2} =and(or(and(not(VP{2}),VPn{2}),U{4}),not(VPn{2}));
+%CFn{1} =and(or(and( not(VP{1}),VPn{1}) ,U{3}),not(VPn{1}));
+%CFn{2} =and(or(and(not(VP{2}),VPn{2}),U{4}),not(VPn{2}));
 
-
+CFn{1} =and(U{3},(or(CF{1},(or(not(U{3}),VP{1})))));
+CFn{2} =and(U{3},(or(CF{2},(or(not(U{4}),VP{2})))));
 
 % VPn{1} = or(U{1} & U{3} & not(CF{2}), U{1});	
 % VPn{2} =or(U{2} &U{4}&not(CF{1})& VP{1},VP{2});	

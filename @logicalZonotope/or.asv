@@ -1,27 +1,17 @@
-function Z = or(Z1,Z2)
-% and - overloads & operator, computes the intersection of two zonotopes
+function Z = or(Z1,Z2,varargin)
+% or - overloads | operator, computes the OR of two logical zonotopes
 %
-% Syntax:  
+% Syntax:
 %    Z = or(Z1,Z2)
 %
 % Inputs:
 %    Z1 - zonotope
-%    Z2 - zonotope, 
+%    Z2 - zonotope,
 %
 % Outputs:
-%    Z - zonotope object enclosing the and zonotope 
+%    Z - zonotope object enclosing the and zonotope
 %
-% Example: 
-%    zono1 = zonotope([4 2 2;1 2 0]);
-%    zono2 = zonotope([3 1 -1 1;3 1 2 0]);
-%
-%    res = zono1 & zono2
-%
-%    figure
-%    hold on
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
-%    plot(res,[1,2],'g');
+% Example:
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,39 +20,89 @@ function Z = or(Z1,Z2)
 % See also: none
 
 % Author:        Amr Alanwar
-% Written:       8-Sept-2022
-% Last update:   
-%                
-%                
+% Written:       8-Aug-2022
+% Last update:
+%
+%
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-[crows1,~] = size(Z1.c);
-[crows2,~] = size(Z2.c);
 
-done=0;
-if ~isempty( Z1.G)
-    [grows1,gcols1] = size(Z1.G{1});
-   if (isequal(Z1.c,zeros(crows1,1)) && isequal(Z1.G{1},zeros(grows1,gcols1) ))
-        Z = Z2;
-        done =1;
+if ~isa(Z1,'logicalZonotope') 
+Z1=logicalZonotope.enclosePoints(Z1);
+end
 
-   elseif (isempty(Z1.c,zeros(crows1,1)) && isequal(Z1.G{1},zeros(grows1,gcols1) ))
+if ~isa(Z2,'logicalZonotope') 
+Z2=logicalZonotope.enclosePoints(Z2);
 
-   end
-elseif ~isempty( Z2.G)
-    [grows2,gcols2] = size(Z2.G{1});
-    if (isequal(Z2.c,zeros(crows2,1)) && isequal(Z2.G{1},zeros(grows2,gcols2) ))
-        Z = Z1;
-        done =1;
+end
+
+if(~isempty(Z1.c) & ~isempty(Z2.c))
+newcen = or(Z1.c, Z2.c);
+else
+newcen =[];
+end
+
+if(~isempty(Z1.G) & ~isempty(Z2.G))
+    %c2 * G1
+    index =1;
+%     if(~isempty(Z2.c))
+%         for i=1:length(Z1.G)
+%             newGen{index} = or(Z2.c,Z1.G{i});
+%             index=index+1;
+%         end
+%     end
+%     if(~isempty(Z1.c))
+%         for i=1:length(Z2.G)
+%             newGen{index} = or(Z1.c,Z2.G{i});
+%             index=index+1;
+%         end
+%     end
+    %G1 * G1
+    for i=1:length(Z1.G)
+        [rows,cols]=size(Z1.G{i});
+        for k=1:length(Z2.G)
+            newGen{index} = or(Z1.G{i}, Z2.G{k});
+            index=index+1;
+        end
     end
-end
+
+    Z = logicalZonotope(newcen,newGen);
+elseif(isempty(Z1.G) & isempty(Z2.G))
+    Z = logicalZonotope(newcen,{});
+
+elseif (isempty(Z2.G))
+    %c2 * G1
+
+%     index =1;
+%     newGen ={};
+%     if(~isempty(Z2.c))
+%         for i=1:length(Z1.G)
+%             newGen{index} = or(Z2.c, Z1.G{i});
+%             index=index+1;
+%         end
+%     end
+
+    Z = logicalZonotope(newcen,Z1.G);
+elseif (isempty(Z1.G))
+    %c2 * G1
+%     newGen = Z2.G;
+% 
+%     index =length(newGen)+1;
+%     if(~isempty(Z1.c))
+%         for i=1:length(Z2.G)
+%             newGen{index} = or(Z1.c,Z2.G{i});
+%             index=index+1;
+%         end
+%     end
+% 
+%     newGen{index} = Z2.c ;
 
 
-if ~done
-    Z = nand(nand(Z1,Z1),nand(Z2,Z2));
+    Z = logicalZonotope(newcen,Z2.G);
+
 end
-Z =unique(Z);
+Z = unique(Z);
 end
 
 %------------- END OF CODE --------------

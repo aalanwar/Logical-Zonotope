@@ -44,8 +44,10 @@ orPoints =[];
 norPoints =[];
 nandPoints =[];
 xorPoints = [];
+semiKronPoints =[];
 notPointsZ1 = [];
 notPointsZ2 = [];
+
 for i =1:p1Col
     notPointsZ1 = [notPointsZ1, ~p1(:,i)];
     for j=1:p2Col
@@ -54,6 +56,7 @@ for i =1:p1Col
         norPoints = [norPoints, norLogic(p1(:,i),p2(:,j))];
         nandPoints = [nandPoints, nandLogic(p1(:,i),p2(:,j))];
         xorPoints = [xorPoints, xor(p1(:,i),p2(:,j))];
+        semiKronPoints =[semiKronPoints, semiKron(p1(:,i),p2(:,j))];
     end
 end
 
@@ -65,10 +68,11 @@ orPoints = unique(orPoints','rows')'
 norPoints = unique(norPoints','rows')'
 nandPoints = unique(nandPoints','rows')'
 xorPoints = unique(xorPoints','rows')'
+semiKronPoints = unique(semiKronPoints','rows')'
 notPointsZ2 = unique(notPointsZ2','rows')'
 notPointsZ1 = unique(notPointsZ1','rows')'
 
-% using CORA
+
 notZ1 = not(Z1);
 notZ2 = not(Z2);
 Z1NorZ2 = nor(Z1 , Z2)
@@ -76,6 +80,7 @@ Z1AndZ2 = and(Z1, Z2)
 Z1OrZ2 = or(Z1, Z2)
 Z1NandZ2 = nand(Z1, Z2)
 Z1XorZ2 = xor(Z1,Z2);
+Z1SemiKronZ2 =semiKron(Z1,Z2);
 
 notZ1Points= evaluate(notZ1)
 notZ2Points= evaluate(notZ2)
@@ -84,7 +89,7 @@ Z1OrZ2Points= evaluate(Z1OrZ2)
 Z1NorZ2Points= evaluate(Z1NorZ2)
 Z1NandZ2Points= evaluate(Z1NandZ2)
 Z1XorZ2Points= evaluate(Z1XorZ2)
-
+Z1SemiKronZ2Points = evaluate(Z1SemiKronZ2)
 
 cNor = xor(c1,c2);
 g1Nor = g1{1};

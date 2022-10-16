@@ -47,16 +47,16 @@ end
 
 [crows1,~] = size(Z1.c);
 [crows2,~] = size(Z2.c);
-Z1 = reduce(Z1);
-Z2 = reduce(Z2);
+% Z1 = reduce(Z1);
+% Z2 = reduce(Z2);
 
 done=0;
 if ~isempty( Z1.G)
     [grows1,gcols1] = size(Z1.G{1});
-   if (isequal(Z1.c,zeros(crows1,1)) && isequal(Z1.G{1},zeros(grows1,gcols1) ))
+   if (isequal(Z1.c,zeros(crows1,1)) && isequal(Z1.G{1},zeros(grows1,gcols1) ) && length(Z1.G)==1)
         Z = Z2;
         done =1;
-   elseif (isempty(Z1.c) && isequal(Z1.G{1},zeros(grows1,gcols1) ) )
+   elseif (isempty(Z1.c) && isequal(Z1.G{1},zeros(grows1,gcols1) ) && length(Z1.G)==1)
         Z = Z2;
         done =1;
    end

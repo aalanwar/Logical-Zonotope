@@ -44,8 +44,6 @@ end
 [invXu,iseyex] = pseudoInvBol(xu);
 isequal( iseyex,eye(Len) ) 
  
-[invU,iseyeu] = pseudoInvBol(u);
-isequal( iseyeu,eye(Len) ) 
 
 
 Lcomp =  mod(xn*invXu,2);

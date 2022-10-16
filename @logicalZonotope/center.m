@@ -10,9 +10,6 @@ function c = center(Z)
 % Outputs:
 %    c - center of the zonotope Z
 %
-% Example:
-%    Z = zonotope([1;0],[1 0; 0 1]);
-%    c = center(Z)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,9 +17,9 @@ function c = center(Z)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      30-September-2006 
-% Last update:  22-March-2007
+% Author:       Amr Alanwar
+% Written:      16-October-2022 
+% Last update:  16-October-2022 
 % Last revision:---
 
 %------------- BEGIN CODE --------------

@@ -30,7 +30,6 @@ function Z = and(Z1,Z2,varargin)
 
 if ~isa(Z1,'logicalZonotope') 
 Z1=logicalZonotope.enclosePoints(Z1);
-
 end
 
 if ~isa(Z2,'logicalZonotope') 
