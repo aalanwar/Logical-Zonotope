@@ -1,8 +1,0 @@
-function [f] = boolFun(A)
-% Summary of this function goes here
-%   Detailed explanation goes here
-A{1} = xor(A{1},xnor(A{2},or(A{3},,))));
-A{2}= and(A{6},xnor(A{2},A{7}));
-A{3}= nand(A{4},nor(A{5},A{1});
-end
-

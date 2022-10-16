@@ -14,16 +14,7 @@ for i=1:10
 g3{i} = randi([0 1],dim,1);
 end
 
-
-
 Z3 = logicalZonotope(c3,g3);
-
-
-%plot(Z3,[1:3],'r','Cont',true);
-%Z3red = reduce(Z3); 
-%hold on
-%plot(Z3red,[1:3],'k');
-
 
 Z1 = logicalZonotope(c1,g1);
 
@@ -33,7 +24,7 @@ Z1I = semiKron([1 0 0 0; 0 1 1 1],semiKron([0;1],ZB));
 
 
 Z2 = logicalZonotope(c2,g2);
-%plot(Z1,[1 2],'r','Cont',true);
+%plot(Z1,[1 2 3],'r*');
 % manually 
 p1=evaluate(Z1)
 p2=evaluate(Z2)
@@ -90,11 +81,6 @@ Z1NorZ2Points= evaluate(Z1NorZ2)
 Z1NandZ2Points= evaluate(Z1NandZ2)
 Z1XorZ2Points= evaluate(Z1XorZ2)
 Z1SemiKronZ2Points = evaluate(Z1SemiKronZ2)
-
-cNor = xor(c1,c2);
-g1Nor = g1{1};
-g2Nor = g2{1};
-AXorB=[   xor(cNor,xor(0*g1Nor,0*g2Nor)) xor(cNor,xor(0*g1Nor,1*g2Nor)) xor(cNor,xor(1*g1Nor,0*g2Nor)) xor(cNor,xor(1*g1Nor,1*g2Nor))]
 
 %%%
 points = [1 0 0; 0 0 1];

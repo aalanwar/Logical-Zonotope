@@ -12,10 +12,6 @@ function Z = cartProd(Z1,Z2)
 %    Z - zonotope object
 %
 % Example: 
-%    zono1 = zonotope.generateRandom(2);
-%    zono2 = zonotope.generateRandom(3);
-%
-%    zono = cartProd(zono1,zono2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,15 +19,14 @@ function Z = cartProd(Z1,Z2)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      18-May-2011
-% Last update:  27-Aug-2019
-%               05-May-2020 (MW, standardized error message)
+% Author:       Amr Alanwar
+% Written:      16-October-2022
+% Last update:  
+%               
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% first or second set is zonotope
 
     
 if(~isempty(Z1.c) & ~isempty(Z2.c))

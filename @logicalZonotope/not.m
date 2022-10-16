@@ -1,27 +1,16 @@
 function Z = not(Z1)
-% and - overloads & operator, computes the intersection of two zonotopes
+% and - overloads ~ operator, computes not of a logical zonotope
 %
 % Syntax:  
-%    Z = not(Z1,Z2)
+%    Z = not(Z1)
 %
 % Inputs:
 %    Z1 - zonotope
-%    Z2 - zonotope, 
 %
 % Outputs:
 %    Z - zonotope object enclosing the and zonotope 
 %
 % Example: 
-%    zono1 = zonotope([4 2 2;1 2 0]);
-%    zono2 = zonotope([3 1 -1 1;3 1 2 0]);
-%
-%    res = zono1 & zono2
-%
-%    figure
-%    hold on
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
-%    plot(res,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,11 +27,11 @@ function Z = not(Z1)
 
 %------------- BEGIN CODE --------------
 if (~isempty(Z1.c))
-[rows,cols] = size(Z1.c);
+    [rows,cols] = size(Z1.c);
 else
-[rows,cols] = size(Z1.G{1});
+    [rows,cols] = size(Z1.G{1});
 end
-Zone = logicalZonotope(ones(rows,1),[]);
+Zone = logicalZonotope(ones(rows,1),{});
 Z = xor(Zone,Z1);
 Z =unique(Z);
 end

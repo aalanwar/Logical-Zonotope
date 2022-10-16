@@ -1,15 +1,12 @@
-function res = containsPoint(Z,p,varargin)
-% containsPoint - determines if the point p is inside the zonotope Z1
+function res = containsPoint(Z,p)
+% containsPoint - determines if the point p is inside the logical zonotope Z1
 %
 % Syntax:
 %    res = containsPoint(Z,p)
-%    res = containsPoint(Z,p,tolerance)
 %
 % Inputs:
 %    Z - zonotope object
 %    p - point specified as a vector
-%    tolerance - numerical tolerance up to which the point is allowed to
-%                outside the zonotope
 %
 % Outputs:
 %    res - boolean whether the point is inside the zonotope or not
@@ -19,8 +16,6 @@ function res = containsPoint(Z,p,varargin)
 %    p = [1;0];
 %    res = containsPoint(Z,p);
 %
-%    plot(Z); hold on;
-%    scatter(p(1),p(2),16,'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,8 +23,8 @@ function res = containsPoint(Z,p,varargin)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      30-January-2018
+% Author:       Amr Alanwar
+% Written:      16-October-2022
 % Last update:  ---
 % Last revision:---
 
@@ -61,9 +56,6 @@ if ~isempty(Z.G)
                 res = true;
                 return;
             end
-
-        
-
 
     end
 

@@ -18,24 +18,6 @@ end
 
 
 
-% for i =1:63
-%     testK{i} = logicalZonotope.enclosePoints([0 1]);
-% end
-% testK{64} = logicalZonotope.enclosePoints([0]);
-%
-% [testz,A,B,C]  =AStreamCipher(testK,10);
-%
-% for i =1:10
-%     m{i} = randi([0 1]);
-%     testc{i}= xor(testz{i},logicalZonotope.enclosePoints(m{i}))
-% end
-%
-% for i =1:10
-%     if ~testc{i}.containsPoint(c{i})
-%         flag =1;
-%     end
-% end
-
 index=1;
 disp('start')
 index=index+1;
@@ -111,13 +93,13 @@ for j =1:length(compA(:,1))
     
     
 
-%     sum=0;
-%     for i =1:Aleng
-%         sum = sum + abs(tempA{i}-A{i}) ;
-%     end
-%     %if sum == 0
-%     sprintf("sum key =%d , j =%d ",sum,j)
-%     %end
+    sum=0;
+    for i =1:Aleng
+        sum = sum + abs(tempA{i}-A{i}) ;
+    end
+    
+    sprintf("sum key =%d , j =%d ",sum,j)
+    
 % 
 %     [testz2,~]  =LFSR1(tempA,numOfmessages);
 %     sum2=0;
@@ -128,7 +110,7 @@ for j =1:length(compA(:,1))
 %     sprintf("sum message =%d",sum2)
 
 end
-execTime = toc
+%execTime = toc
 
 
 

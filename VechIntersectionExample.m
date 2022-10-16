@@ -2,16 +2,14 @@ clear all
 
 load('cache\L.mat')
 
-steps = 100;
-VPl{1}{1} = logicalZonotope.enclosePoints([0,1]);
+steps = 3;
+VPl{1}{1} = 1;
 VPl{1}{2} = [0];
-% VPl{3} = [1;0];
-% VPl{4} = [1;0];
 
-CFl{1}{1} = logicalZonotope.enclosePoints([0,1]);
+
+CFl{1}{1} = 1;
 CFl{1}{2} = [0];
-% CFl{3} = [1;0];
-% CFl{4} = [1;0];
+
 
 Ul{1} = logicalZonotope.enclosePoints([0,1]);
 Ul{2} = logicalZonotope.enclosePoints([0,1]);
@@ -71,7 +69,9 @@ execBCN = toc
 
 
 %%----------- BDD ---------%%
-
+VPl ={};
+CFl={};
+Ul={};
 VP{1} = [[0],[1]];
 VP{2} = [0];
 
@@ -80,28 +80,23 @@ CF{1} = [[0],[1]];
 CF{2} = [1];
 
 
-U{1} = [[0;1],[1;0]];
+U{1} = [[0],[1]];
 U{2} = U{1};
 U{3} = U{1};
 U{4} = U{1};
-tic
-xpoints{1}= [];
-for i=1:length(VP{1}(1,:))
-    for j = 1:length(CF{1}(1,:))
-        xVP = semiKron(VP{1}(:,i),VP{2});
-        xCF = semiKron(CF{1}(:,i),CF{2});
-        xpoints{1} = [ xpoints{1} semiKron(xVP,xCF)];
-    end
-end
+
+
 VP1points{1}=VP{1};
 VP2points{1}=VP{2};
 
 CF1points{1}=CF{1};
 CF2points{1}=CF{2};
-
+tic
 for s = 1:steps
-    xpoints{s+1} = [];
-    xpoints{s+1} = [];
+    VP1points{s+1} = [];
+    VP2points{s+1} = [];
+    CF1points{s+1} = [];
+    CF2points{s+1} = [];
     for iVP1=1:length(VP1points{s}(1,:))
         for iVP2=1:length(VP2points{s}(1,:))
             for iCF1=1:length(CF1points{s}(1,:))
@@ -116,11 +111,11 @@ for s = 1:steps
                                     Ul{4}= U{4}(:,j4);
 
                                     VPl{1}=VP1points{s}(:,iVP1);
-                                    VPl{2}=VP1points{s}(:,iVP2);
-                                    VPl{1}=VP1points{s}(:,iVP1);
-                                    VPl{2}=VP1points{s}(:,iVP2);
+                                    VPl{2}=VP2points{s}(:,iVP2);
+                                    CFl{1}=CF1points{s}(:,iCF1);
+                                    CFl{2}=CF2points{s}(:,iCF2);
 
-                                    [VPl,CFl] = vehLogicBDD(Ul,VPl,CFl)
+                                    [VPl,CFl] = vehLogicBDD(Ul,VPl,CFl);
                                     VP1points{s+1} = [ VP1points{s+1} VPl{1}];
                                     VP2points{s+1} = [ VP2points{s+1} VPl{2}];
                                     CF1points{s+1} = [ CF1points{s+1} CFl{1}];
@@ -134,13 +129,12 @@ for s = 1:steps
             end
         end
     end
+    VP1points{s+1} = unique(VP1points{s+1}','rows')';
+    VP2points{s+1} = unique(VP2points{s+1}','rows')';
+    CF1points{s+1} = unique(CF1points{s+1}','rows')';
+    CF2points{s+1} = unique(CF2points{s+1}','rows')';
 end
-VP1points{s+1} = unique(VP1points{s+1}','rows')';
-VP2points{s+1} = unique(VP2points{s+1}','rows')';
-CF1points{s+1} = unique(CF1points{s+1}','rows')';
-CF2points{s+1} = unique(CF2points{s+1}','rows')';
-end
-execBCN = toc
+execBDD = toc
 
 
 

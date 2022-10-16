@@ -9,7 +9,7 @@ function Z = xnor(Z1,Z2)
 %    Z2 - zonotope, 
 %
 % Outputs:
-%    Z - zonotope object enclosing the and zonotope 
+%    Z - zonotope object enclosing the xnor zonotope 
 %
 % Example: 
 %
@@ -20,7 +20,7 @@ function Z = xnor(Z1,Z2)
 % See also: none
 
 % Author:        Amr Alanwar
-% Written:       8-Sept-2022
+% Written:       16-October-2022
 % Last update:   16-October-2022
 %                
 %                

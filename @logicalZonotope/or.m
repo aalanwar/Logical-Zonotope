@@ -1,5 +1,5 @@
 function Z = or(Z1,Z2)
-% and - overloads & operator, computes the intersection of two zonotopes
+% and - overloads | operator, computes the or of two zonotopes
 %
 % Syntax:  
 %    Z = or(Z1,Z2)
@@ -12,16 +12,6 @@ function Z = or(Z1,Z2)
 %    Z - zonotope object enclosing the and zonotope 
 %
 % Example: 
-%    zono1 = zonotope([4 2 2;1 2 0]);
-%    zono2 = zonotope([3 1 -1 1;3 1 2 0]);
-%
-%    res = zono1 & zono2
-%
-%    figure
-%    hold on
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
-%    plot(res,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,7 +20,7 @@ function Z = or(Z1,Z2)
 % See also: none
 
 % Author:        Amr Alanwar
-% Written:       8-Sept-2022
+% Written:       16-October-2022
 % Last update:   
 %                
 %                

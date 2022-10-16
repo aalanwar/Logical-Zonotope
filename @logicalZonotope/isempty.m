@@ -11,12 +11,6 @@ function res = isempty(obj)
 %    res - result in {0,1}
 %
 % Example: 
-%    Z1 = zonotope([]);
-%    Z2 = zonotope([0;0]);
-%    Z3 = zonotope([1;0],[1 -2 1; 0 1 -2]);
-%    isempty(Z1); % true
-%    isempty(Z2); % false
-%    isempty(Z3); % false
 %
 % Other m-files required: none
 % Subfunctions: none
