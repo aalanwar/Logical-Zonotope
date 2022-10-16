@@ -1,8 +1,8 @@
-function Zred = reduce(Z,varargin)
-% reduce - Reduces the order of a zonotope
+function Zred = reduce(Z)
+% reduce - Reduces the number of generators of a logical zonotope
 %
 % Syntax:
-%    Zred = reduce(Z,option,order)
+%    Zred = reduce(Z)
 %
 % Inputs:
 %    Z - zonotope object

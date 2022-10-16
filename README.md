@@ -20,6 +20,18 @@ To showcase the utility of logical zonotopes, we illustrate three use cases: (1)
 5- Run BoolFunctionExample.m for Example 3 in the paper <br /><br />
 <br/> 
 
+## Main Support APIs
+Z = xor(Z1,Z2): XOR between two logical zontoopes <br />
+Z = and(Z1,Z2): AND between two logical zontoopes  <br />
+Z = or(Z1,Z2): OR between two logical zontoopes  <br />
+Z = nor(Z1,Z2): NOR between two logical zontoopes  <br />
+Z = nand(Z1,Z2): NAND between two logical zontoopes  <br />
+Z = not(Z1): not a logical zontoope  <br />
+Z = semiKron(Z1,Z2): Semi Tensor Produce between Z1 and Z2 <br />
+Flag = Z.containPoints(P): Determines if the point p is inside the logical zonotope Z <br />
+Z = enclosePoints(points): Encloses points with a logical zonotope Z <br />
+Zred = reduce(Z): Reduces the number of generators of a logical zonotope  <br />
+<br /><br />
 
 
 ```
