@@ -35,10 +35,10 @@ Zred = reduce(Z): Reduces the number of generators of a logical zonotope  <br />
 
 
 ```
-@article{logicalZonotope,
+@proceedings{logicalzonotope,
   title={Logical Zonotope: A Set Representation for Binary Vectors},
-  author={Alanwar, Amr and Jiang, Frank J. and Amin, Samy and Johansson, Karl Henrik},
-  journal={arXiv preprint },
+  author={Alanwar, Amr and Jiang, Frank J and Amin, Samy and Johansson, Karl H},
+  booktitle={arXiv preprint arXiv:2210.08596},
   year={2022}
 }
 ```
