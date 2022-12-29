@@ -1,9 +1,9 @@
-
 ## Logical Zonotope: A Set Representation for Binary Vectors
 
 This repo cotains the code for our paper:
 Logical Zonotope: A Set Representation for Binary Vectors
 Authors: Amr Alanwar, Frank J. Jiang, Samy Amin and Karl Henrik Johansson 
+
 
 ## Abstract
 We propose a new set representation for binary vectors called logical zonotopes.
@@ -33,6 +33,9 @@ Z = enclosePoints(points): Encloses points with a logical zonotope Z <br />
 Zred = reduce(Z): Reduces the number of generators of a logical zonotope  <br />
 <br /><br />
 
+
+## Acknowledgement
+The implementation is available in python as well on [Logical Zonotopes in Python](https://pypi.org/project/logical-zonotope/0.1.0/). We thank very much the efforts by Fargol Karamiyar. 
 
 ```
 @proceedings{logicalzonotope,
