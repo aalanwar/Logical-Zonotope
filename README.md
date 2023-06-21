@@ -6,7 +6,7 @@ This repo cotains the code for our two papers: <br />
 1- Polynomial Logical Zonotopes: A Set Representation for Reachability Analysis of Logical Systems <br />
 Authors: Amr Alanwar, Frank J. Jiang, and Karl Henrik Johansson  <br />
 
-1- Logical Zonotope: A Set Representation for Binary Vectors <br />
+1- Logical Zonotope: A Set Representation for the Formal Verification of Boolean Functions <br />
 Authors: Amr Alanwar, Frank J. Jiang, Samy Amin and Karl Henrik Johansson  <br />
 
 
