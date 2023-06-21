@@ -1,5 +1,5 @@
 
-## Logical Zonotope: A Set Representation for Binary Vectors
+## Logical Zonotope and polynomial logical zonotopes: Set Representations for Binary Vectors
 
 This repo cotains the code for our two papers: <br />
 
