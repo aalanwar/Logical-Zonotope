@@ -38,7 +38,7 @@ Z2=logicalZonotope.enclosePoints(Z2);
 end
 
 if(~isempty(Z1.c) & ~isempty(Z2.c))
-newcen = Z1.c & Z2.c;
+newcen = (Z1.c & Z2.c);
 else
 newcen =[];
 end
@@ -48,13 +48,13 @@ if(~isempty(Z1.G) & ~isempty(Z2.G))
     index =1;
     if(~isempty(Z2.c))
         for i=1:length(Z1.G)
-            newGen{index} = Z2.c & Z1.G{i};
+            newGen{index} = (Z2.c & Z1.G{i});
             index=index+1;
         end
     end
     if(~isempty(Z1.c))
         for i=1:length(Z2.G)
-            newGen{index} = Z1.c & Z2.G{i};
+            newGen{index} = (Z1.c & Z2.G{i});
             index=index+1;
         end
     end
@@ -78,7 +78,7 @@ elseif (isempty(Z2.G))
     newGen ={};
     if(~isempty(Z2.c))
         for i=1:length(Z1.G)
-            newGen{index} = Z2.c & Z1.G{i};
+            newGen{index} = (Z2.c & Z1.G{i});
             index=index+1;
         end
     end
@@ -91,12 +91,12 @@ elseif (isempty(Z1.G))
     index =length(newGen)+1;
     if(~isempty(Z1.c))
         for i=1:length(Z2.G)
-            newGen{index} = Z1.c & Z2.G{i};
+            newGen{index} =  (Z1.c & Z2.G{i});
             index=index+1;
         end
     end
 
-    newGen{index} = Z2.c ;
+    newGen{index} = (Z2.c) ;
 
 
     Z = logicalZonotope(newcen,newGen);

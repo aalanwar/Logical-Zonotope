@@ -1,14 +1,14 @@
 clear all
 close all
 
-rng(50);
-c1 = [0;1];
+rng(4);
+c1 = [0;0];
 c2 = [0;1];
 g1 = {[1;0]};
 %g1 = {[0 1;1 1]};
 g2 = {[1;1]};
 %g2 = {[1 0;0 1]};
-dim =20;
+dim =3;
 c3= [randi([0 1],dim,1) ];
 for i=1:10
 g3{i} = randi([0 1],dim,1);
@@ -38,7 +38,7 @@ xorPoints = [];
 semiKronPoints =[];
 notPointsZ1 = [];
 notPointsZ2 = [];
-
+tic
 for i =1:p1Col
     notPointsZ1 = [notPointsZ1, ~p1(:,i)];
     for j=1:p2Col
@@ -50,7 +50,7 @@ for i =1:p1Col
         semiKronPoints =[semiKronPoints, semiKron(p1(:,i),p2(:,j))];
     end
 end
-
+exeTime=toc
 for j=1:p2Col
     notPointsZ2 = [notPointsZ2, ~p2(:,j)];
 end
@@ -83,8 +83,8 @@ Z1XorZ2Points= evaluate(Z1XorZ2)
 Z1SemiKronZ2Points = evaluate(Z1SemiKronZ2)
 
 %%%
-points = [1 0 0; 0 0 1];
-pointsZono = logicalZonotope.enclosePoints(points)
-pointsBack=evaluate(pointsZono)
+% points = [1 0 0; 0 0 1];
+% pointsZono = logicalZonotope.enclosePoints(points)
+% pointsBack=evaluate(pointsZono)
 
 

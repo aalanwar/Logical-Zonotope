@@ -55,6 +55,10 @@ for i=1:L
     else
         points = [ points onePoint];
     end   
+
+    if mod(i,1000)==0
+        points=unique(points','rows')';
+    end
 end
 
 %   pointB = dec2bin(i-1,numOfgen);

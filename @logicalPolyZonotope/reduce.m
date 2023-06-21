@@ -28,6 +28,23 @@ function Zred = reduce(Z)
 cen = Z.c;
 gen = Z.G;
 
+
+newG = Z1.GI;
+startIdx = length(Z1.GI);
+
+for i =1:length(Z1.G)
+    newG{i+startIdx} = Z1.G{i};
+end
+if isempty(Z1.E)
+    newE = eye(size(Z1.GI,2));
+elseif isempty(Z1.GI)
+    newE =  Z1.E;
+else
+    newE = blkdiag(eye(size(Z1.GI,2)),Z1.E);
+end
+
+
+
 if ~isempty(gen)
     points = evaluate(Z);
     removeGen =[];
@@ -39,7 +56,7 @@ if ~isempty(gen)
             break;
         end
         genMat=cell2mat(gen);
-        newgen = mat2cell(logical(setdiff(genMat', gen{index}','rows')'),length(cen),ones(1,length(gen(1,:))-1));
+        newgen = mat2cell(setdiff(genMat', gen{index}','rows')',length(cen),ones(1,length(gen(1,:))-1));
         newZ = logicalZonotope(cen,newgen);
         newPoints = evaluate(newZ);
         if ismember(points',newPoints','rows')

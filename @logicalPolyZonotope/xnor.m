@@ -27,12 +27,12 @@ function Z = xnor(Z1,Z2)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-if ~isa(Z1,'logicalZonotope') 
-Z1=logicalZonotope.enclosePoints(Z1);
+if ~isa(Z1,'logicalPolyZonotope') 
+Z1=logicalPolyZonotope.enclosePoints(Z1);
 end
 
-if ~isa(Z2,'logicalZonotope') 
-Z2=logicalZonotope.enclosePoints(Z2);
+if ~isa(Z2,'logicalPolyZonotope') 
+Z2=logicalPolyZonotope.enclosePoints(Z2);
 end
 
 Z = not(xor(Z1,Z2));

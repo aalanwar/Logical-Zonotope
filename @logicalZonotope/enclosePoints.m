@@ -31,7 +31,7 @@ points=unique(points','rows')';
 cen = points(:,1);
 if numOfPoints > 1
     containsZeroFlag=0;
-    newPoints = [];
+    newPoints = logical([]);
     for i =1:numOfPoints
         if points(:,i) == zeros(dim,1)
             containsZeroFlag =1;
@@ -41,7 +41,7 @@ if numOfPoints > 1
     end
     
     if containsZeroFlag ==1
-        cen = zeros(dim,1);
+        cen = logical(zeros(dim,1));
         for i =1:numOfPoints-1
             gen{i} =newPoints(:,i);
         end
@@ -60,4 +60,5 @@ Z=unique(Z);
 
 end
 
+%------------- END OF CODE --------------
 %------------- END OF CODE --------------

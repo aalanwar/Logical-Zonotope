@@ -26,14 +26,16 @@ function Z = not(Z1)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
 if (~isempty(Z1.c))
     [rows,cols] = size(Z1.c);
+    Z = logicalZonotope(xor(ones(rows,1),Z1.c),Z1.G);
 else
     [rows,cols] = size(Z1.G{1});
+    Z = logicalZonotope(ones(rows,1),Z1.G);
 end
-Zone = logicalZonotope(ones(rows,1),{});
-Z = xor(Zone,Z1);
-Z =unique(Z);
+
+%Z =unique(Z);
 end
 
 %------------- END OF CODE --------------
