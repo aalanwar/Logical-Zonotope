@@ -27,7 +27,8 @@ function Z = cartProd(Z1,Z2)
 
 %------------- BEGIN CODE --------------
 
-
+% bring the exponent matrices to a common representation
+[idCom,E1Com,E2Com] = mergeExpMatrix(Z1.id,Z2.id,Z1.E,Z2.E);
     
 if(~isempty(Z1.c) & ~isempty(Z2.c))
     newCen = [ Z1.c;Z2.c ];
@@ -39,29 +40,6 @@ elseif isempty(Z2.c)
     newCen = Z1.c ;
 end
 
-if(isempty(Z1.GI))
-    newGenI = Z2.GI;
-elseif(isempty(Z2.GI))
-    newGenI = Z1.GI;
-elseif(isempty(Z1.GI) && isempty(Z2.GI))
-    newGenI ={};
-elseif(~isempty(Z1.GI) && ~isempty(Z2.GI))
-    g1Len = length(Z1.GI);
-    g2Len = length(Z2.GI);
-    sizeOfGen1 = length(Z1.GI{1});
-    sizeOfGen2 = length(Z2.GI{1});
-    
-    for i =1:g1Len
-        newGenI{i} = [Z1.GI{i};zeros(sizeOfGen2,1)];
-    end
-
-
-    index =1;
-    for i=g1Len+1:g1Len+g2Len
-        newGenI{i} =  [zeros(sizeOfGen1,1);Z2.GI{index}];
-        index = index +1;
-    end
-end
 
 if(isempty(Z1.G))
     newGen = Z2.G;
@@ -88,10 +66,10 @@ elseif(~isempty(Z1.G) && ~isempty(Z2.G))
         index = index +1;
     end
 
-    newE = blkdiag(Z1.E,Z2.E);
+    newE = blkdiag(E1Com,E2Com);
 end
 
-Z=logicalPolyZonotope(newCen,newGenI,newGen,newE);
+Z=logicalPolyZonotope(newCen,newGen,newE,idCom);
 Z =unique(Z);
 
 end

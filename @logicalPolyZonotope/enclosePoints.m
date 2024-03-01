@@ -27,7 +27,7 @@ function Z = enclosePoints(points,varargin)
 %------------- BEGIN CODE --------------
 
 lZ=logicalZonotope.enclosePoints(points);
-Z=logicalPolyZonotope(lZ.c,lZ.G,{},[]);
+Z=logicalPolyZonotope(lZ.c,lZ.G,eye(length(lZ.G)));
 
 
 end

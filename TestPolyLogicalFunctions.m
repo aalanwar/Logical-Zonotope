@@ -4,54 +4,31 @@ close all
 rng(151);
 
 for kk=1:1
-dim=3;
+dim=4;
 c1= [randi([0 1],dim,1) ];
-% for i=1:1
-%     gI1{i} = randi([0 1],dim,1);
-% end
-gI1 = {};%{randi([0 1],dim,1)};
-g1 ={};
-E1=[];
-% for i=1:2
-%    g1{i} = randi([0 1],dim,1);
-% end
-% E1 = [1 0;1 1];
+for i=1:2
+    g1{i} = randi([0 1],dim,1);
+end
+E1=[1 1; 0 1];
+id1 = [ 1;2];
 
 
 c2= [randi([0 1],dim,1) ];
-for i=1:3
-    gI2{i} = randi([0 1],dim,1);
-end
 %gI2 = {randi([0 1],dim,1)};
-for i=1:2
+for i=1:1
     g2{i} = randi([0 1],dim,1);
 end
 %g2 = {};
 E2 =  [1 0;0 1];
+id2 = [ 3;4];
 
-% c1 = [0;1;0];
-% gI1 = {[1;0;1]};
-% g1 = {[0;1;1],[1;1;1]};
-% E1 = [1 1;0 1];
-% pZ1 = logicalPolyZonotope(c1,gI1,g1,E1);
-% evaluate(pZ1)
 
-%
-% c2 = [1;0;1];
-% gI2 = {[0;1;1],[1;0;0]};
-% g2 = {};
-% E2 = [  ];
 
-% dim =20;
-% c3= [randi([0 1],dim,1) ];
-% for i=1:10
-%     g3{i} = randi([0 1],dim,1);
-% end
 
-Z1 = logicalZonotope(c1,gI1);
-Z2 = logicalZonotope(c2,gI2);
-pZ1 = logicalPolyZonotope(c1,gI1,g1,E1);
-pZ2 = logicalPolyZonotope(c2,gI2,g2,E2);
+Z1 = logicalZonotope(c1,g1);
+Z2 = logicalZonotope(c2,g2);
+pZ1 = logicalPolyZonotope(c1,g1,E1,id1);
+pZ2 = logicalPolyZonotope(c2,g2,E2,id2);
 
 %plot(Z1,[1 2 3],'r*');
 % manually
@@ -99,7 +76,8 @@ notPointsZ1 = unique(notPointsZ1','rows')';
 notpZ1 = not(pZ1);
 notpZ2 = not(pZ2);
 pZ1NorpZ2 = nor(pZ1 , pZ2);
-pZ1AndpZ2 = and(pZ1, pZ2);
+%ExactpZ1AndpZ2 = exactAnd(pZ1, pZ2);
+pZ1AndpZ2 = exactAnd(pZ1, pZ2);
 pZ1OrpZ2 = or(pZ1, pZ2);
 pZ1NandpZ2 = nand(pZ1, pZ2);
 pZ1XorpZ2 = xor(pZ1,pZ2);

@@ -2,8 +2,7 @@ clear all
 
 load('cache\L.mat')
 
-steps = 5;
-
+steps = 2;
 
 
 VPl{1}{1} = logical(1);
@@ -14,7 +13,7 @@ VPl{1}{4} = logicalZonotope.enclosePoints(logical([0,1]));
 VplOrig = VPl;
 
 CFl{1}{1} = logical(1);
-CFl{1}{2} = logicalZonotope.enclosePoints(logical([0,1]));
+CFl{1}{2} = logical(1);%logicalZonotope.enclosePoints(logical([0,1]));
 CFl{1}{3} = logical(0);
 CFl{1}{4} = logicalZonotope.enclosePoints(logical([0,1]));
 
@@ -23,12 +22,11 @@ CFlOrig = CFl;
 Ul{1} = logicalZonotope.enclosePoints(logical([0,1]));
 Ul{2} = logical(0);
 Ul{3} = logicalZonotope.enclosePoints(logical([0,1]));
-Ul{4} = logicalZonotope.enclosePoints(logical([0,1]));
-Ul{5} = logicalZonotope.enclosePoints(logical([0,1]));
+Ul{4} = logical(0);logicalZonotope.enclosePoints(logical([0,1]));
+Ul{5} = logical(1);%logicalZonotope.enclosePoints(logical([0,1]));
 Ul{6} = logical(0);
 Ul{7} = logicalZonotope.enclosePoints(logical([0,1]));
 Ul{8} = logicalZonotope.enclosePoints(logical([0,1]));
-
 
 UlOrig = Ul;
 tic
@@ -61,73 +59,6 @@ CF4NPoints=length(CF4data);
 totalPointsZono = VP1NPoints + VP2NPoints +VP3NPoints + VP4NPoints ...
     + CF1NPoints + CF2NPoints + CF3NPoints + CF4NPoints
 
-%%----------- Poly Zonotope ---------%%
-%VPl ={};
-%CFl ={};
-
-% for i =1:4
-%     if isa(VplOrig{1}{i},'logicalZonotope')
-%         VPl{1}{i}= logicalPolyZonotope(VPl{1}{i}.c,VPl{1}{i}.G,eye(length(VPl{1}{i}.G)),i); 
-%     elseif VplOrig{1}{i}== logical(0)
-%         VPl{1}{i}= logical(0);
-%     else
-%         VPl{1}{i}= logical(1);
-%     end
-% end
-% 
-% for i =1:4
-%     if isa(CFlOrig{1}{i},'logicalZonotope')
-%         CFl{1}{i}= logicalPolyZonotope(CFl{1}{i}.c,CFl{1}{i}.G,eye(length(CFl{1}{i}.G)),i+4); 
-%     elseif CFlOrig{1}{i}== logical(0)
-%         CFl{1}{i}= logical(0);
-%     else
-%         CFl{1}{i}= logical(1);
-%     end
-% end
-% 
-% for i =1:8
-%     if isa(UlOrig{i},'logicalZonotope')
-%         Ul{i}= logicalPolyZonotope(Ul{i}.c,Ul{i}.G,eye(length(Ul{i}.G)),i+8); 
-%     elseif UlOrig{i}== logical(0)
-%         Ul{i}= logical(0);
-%     else
-%         Ul{i}= logical(1);
-%     end
-% end
-% 
-% 
-% tic
-% for i=1:steps
-%     [VPl{i+1},CFl{i+1}] = vehLogicPolyZono4(Ul,VPl{i},CFl{i});
-% 
-%     %     CFl{i+1}{1}=rmZeroGens(CFl{i+1}{1});
-%     %     CFl{i+1}{2}=rmZeroGens(CFl{i+1}{2});
-%     %     VPl{i+1}{1}=rmZeroGens(VPl{i+1}{1});
-%     %     VPl{i+1}{2}=rmZeroGens(VPl{i+1}{2});
-% end
-% execlogicPolyZono = toc
-% 
-% 
-% VP1PZdata=evaluate(VPl{steps+1}{1});
-% VP2PZdata=evaluate(VPl{steps+1}{2});
-% VP3PZdata=evaluate(VPl{steps+1}{3});
-% VP4PZdata=evaluate(VPl{steps+1}{4});
-% CF1PZdata=evaluate(CFl{steps+1}{1});
-% CF2PZdata=evaluate(CFl{steps+1}{2});
-% CF3PZdata=evaluate(CFl{steps+1}{3});
-% CF4PZdata=evaluate(CFl{steps+1}{4});
-% 
-% VP1PZNPoints=length(VP1PZdata);
-% VP2PZNPoints=length(VP2PZdata);
-% VP3PZNPoints=length(VP3PZdata);
-% VP4PZNPoints=length(VP4PZdata);
-% CF1PZNPoints=length(CF1PZdata);
-% CF2PZNPoints=length(CF2PZdata);
-% CF3PZNPoints=length(CF3PZdata);
-% CF4PZNPoints=length(CF4PZdata);
-% 
-% totalPointsPZ = VP1PZNPoints + VP2PZNPoints + CF1PZNPoints + CF2PZNPoints ...
-%                +VP3PZNPoints + VP4PZNPoints + CF3PZNPoints + CF4PZNPoints
 
 %%-----------Exact Poly Zonotope ---------%%
 %VPl ={};
@@ -156,10 +87,6 @@ end
 for i =1:8
     if isa(UlOrig{i},'logicalZonotope')
         Ul{i}= logicalPolyZonotope(Ul{i}.c,Ul{i}.G,eye(length(Ul{i}.G)),i+8); 
-    elseif UlOrig{i}== logical(0)
-        Ul{i}= logical(0);
-    else
-        Ul{i}= logical(1);
     end
 end
 
@@ -196,8 +123,69 @@ CF4PZNPoints=length(CF4PZdata);
 
 totalExactPointsPZ = VP1PZNPoints + VP2PZNPoints + CF1PZNPoints + CF2PZNPoints ...
                +VP3PZNPoints + VP4PZNPoints + CF3PZNPoints + CF4PZNPoints
+%%----------- Poly Zonotope ---------%%
+%VPl ={};
+%CFl ={};
+
+for i =1:4
+    if isa(VplOrig{1}{i},'logicalZonotope')
+        VPl{1}{i}= logicalPolyZonotope(VPl{1}{i}.c,VPl{1}{i}.G,eye(length(VPl{1}{i}.G)),i); 
+    elseif VplOrig{1}{i}== logical(0)
+        VPl{1}{i}= logical(0);
+    else
+        VPl{1}{i}= logical(1);
+    end
+end
+
+for i =1:4
+    if isa(CFlOrig{1}{i},'logicalZonotope')
+        CFl{1}{i}= logicalPolyZonotope(CFl{1}{i}.c,CFl{1}{i}.G,eye(length(CFl{1}{i}.G)),i+4); 
+    elseif CFlOrig{1}{i}== logical(0)
+        CFl{1}{i}= logical(0);
+    else
+        CFl{1}{i}= logical(1);
+    end
+end
+
+for i =1:8
+    if isa(UlOrig{i},'logicalZonotope')
+        Ul{i}= logicalPolyZonotope(Ul{i}.c,Ul{i}.G,eye(length(Ul{i}.G)),i+8); 
+    end
+end
 
 
+tic
+for i=1:steps
+    [VPl{i+1},CFl{i+1}] = vehLogicPolyZono4(Ul,VPl{i},CFl{i});
+
+    %     CFl{i+1}{1}=rmZeroGens(CFl{i+1}{1});
+    %     CFl{i+1}{2}=rmZeroGens(CFl{i+1}{2});
+    %     VPl{i+1}{1}=rmZeroGens(VPl{i+1}{1});
+    %     VPl{i+1}{2}=rmZeroGens(VPl{i+1}{2});
+end
+execlogicPolyZono = toc
+
+
+VP1PZdata=evaluate(VPl{steps+1}{1});
+VP2PZdata=evaluate(VPl{steps+1}{2});
+VP3PZdata=evaluate(VPl{steps+1}{3});
+VP4PZdata=evaluate(VPl{steps+1}{4});
+CF1PZdata=evaluate(CFl{steps+1}{1});
+CF2PZdata=evaluate(CFl{steps+1}{2});
+CF3PZdata=evaluate(CFl{steps+1}{3});
+CF4PZdata=evaluate(CFl{steps+1}{4});
+
+VP1PZNPoints=length(VP1PZdata);
+VP2PZNPoints=length(VP2PZdata);
+VP3PZNPoints=length(VP3PZdata);
+VP4PZNPoints=length(VP4PZdata);
+CF1PZNPoints=length(CF1PZdata);
+CF2PZNPoints=length(CF2PZdata);
+CF3PZNPoints=length(CF3PZdata);
+CF4PZNPoints=length(CF4PZdata);
+
+totalPointsPZ = VP1PZNPoints + VP2PZNPoints + CF1PZNPoints + CF2PZNPoints ...
+               +VP3PZNPoints + VP4PZNPoints + CF3PZNPoints + CF4PZNPoints
 %%----------- BCN ---------%%
 
 for i =1:4
@@ -368,8 +356,8 @@ for s = 1:steps
                                                                     CFin{3}=CF3points{s}(iCF3);
                                                                     CFin{4}=CF4points{s}(iCF4);
 
-                                                                    [VPin,CFin] = vehLogicZono4(Uin,VPin,CFin);
-                                                                    %[VPin,CFin] = vehLogicBDD4(Uin,VPin,CFin);
+                                                                    %[VPin,CFin] = vehLogicZono4(Uin,VPin,CFin);
+                                                                    [VPin,CFin] = vehLogicBDD4(Uin,VPin,CFin);
                                                                     VP1points{s+1} = [ VP1points{s+1} VPin{1}];
                                                                     VP2points{s+1} = [ VP2points{s+1} VPin{2}];
                                                                     VP3points{s+1} = [ VP3points{s+1} VPin{3}];

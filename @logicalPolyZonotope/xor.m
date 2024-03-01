@@ -37,6 +37,16 @@ function Z = xor(Z1,Z2,varargin)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+if ~isa(Z1,'logicalPolyZonotope')
+    Z1=logicalZonotope.enclosePoints(Z1);
+    Z1=logicalPolyZonotope(Z1.c,Z1.G,eye(length(Z1.G)));
+end
+
+if ~isa(Z2,'logicalPolyZonotope')
+    Z2=logicalZonotope.enclosePoints(Z2);
+    Z2=logicalPolyZonotope(Z2.c,Z2.G,eye(length(Z2.G)));
+end
+
 
 if(~isempty(Z1.c) && ~isempty(Z2.c))
     newCen = xor( Z1.c,Z2.c );
@@ -69,26 +79,15 @@ elseif(~isempty(Z1.G) && ~isempty(Z2.G))
     newE = blkdiag(Z1.E,Z2.E);
 end
 
-if(isempty(Z1.GI))
-    newGenI = Z2.GI;
-elseif(isempty(Z2.GI))
-    newGenI = Z1.GI;
-elseif(isempty(Z1.GI) && isempty(Z2.GI))
-    newGenI ={};
-elseif(~isempty(Z1.GI) && ~isempty(Z2.GI))
-    g1Len = length(Z1.GI);
-    g2Len = length(Z2.GI);
-    newGenI = Z1.GI;
-    index =1;
-    for i=g1Len+1:g1Len+g2Len
-        newGenI{i} =  Z2.GI{index};
-        index = index +1;
-    end
+
+
+if isempty(Z1.id)
+    newId =  Z2.id;
+else
+    newId = [Z1.id;max(Z1.id) + Z2.id];
 end
 
-
-
-Z = logicalPolyZonotope(newCen,newGenI,newGen,newE);
+Z = logicalPolyZonotope(newCen,newGen,newE,newId);
 Z = unique(Z);
 
 end

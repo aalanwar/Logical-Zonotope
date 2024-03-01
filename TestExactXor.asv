@@ -1,0 +1,71 @@
+clear all
+
+dim=3;
+c1= [logical(randi([0 1],dim,1)) ];
+for i=1:1
+    gI1{i} = randi([0 1],dim,1);
+end
+gI1 = {};%{randi([0 1],dim,1)};
+g1 ={randi([0 1],dim,1)};;
+E1=[];
+% for i=1:2
+%    g1{i} = randi([0 1],dim,1);
+% end
+% E1 = [1 0;1 1];
+
+
+c2= [logical(randi([0 1],dim,1)) ];
+for i=1:3
+    gI2{i} = logical(randi([0 1],dim,1));
+end
+%gI2 = {randi([0 1],dim,1)};
+for i=1:2
+    g2{i} = logical(randi([0 1],dim,1));
+end
+%g2 = {};
+E2 =  [1 0;0 1];
+
+
+
+Z1 = logicalZonotope(c1,gI1);
+Z2 = logicalZonotope(c2,gI2);
+pZ1 = logicalPolyZonotope(c1,gI1,g1,E1);
+pZ2 = logicalPolyZonotope(c2,gI2,g2,E2);
+
+%plot(Z1,[1 2 3],'r*');
+% manually
+p1=evaluate(pZ1);
+p2=evaluate(pZ2);
+[~,p1Col]=size(p1);
+[~,p2Col]=size(p2);
+ExactXorPoints=[];
+
+
+tic
+for i =1:p1Col
+        ExactXorPoints = [ExactXorPoints, xor(p1(:,i),p1(:,i))];
+end
+exeTime=toc;
+
+
+ExactXorPoints = unique(ExactXorPoints','rows')';
+
+
+pZ1ExactXorpZ1 = exactXor(pZ1,pZ1);
+
+
+pZ1XorpZ1Points= evaluate(pZ1ExactXorpZ1);
+
+%% checks
+if isequal(ExactXorPoints,pZ1XorpZ1Points) 
+    disp('All tests passed')
+else
+    disp('Test problem(s)')
+end
+
+
+if ~isequal(ExactXorPoints,pZ1XorpZ1Points)
+    disp('Exact Xor problem')
+end
+
+

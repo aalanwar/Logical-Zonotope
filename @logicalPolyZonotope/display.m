@@ -39,13 +39,6 @@ fprintf(newline);
 disp('c: ');
 disp(center(Z));
 
-%display generators
-disp('GI: ');
-if ~isempty(Z.GI)
-    for i = 1:length(Z.GI)
-        disp(Z.GI{i});
-    end
-end
 
 
 disp('G: ');
@@ -60,5 +53,10 @@ end
 disp('E: ');
 if ~isempty(Z.G)
 disp(Z.E);
+end
+
+disp('id: ');
+if ~isempty(Z.id)
+disp(Z.id);
 end
 %------------- END OF CODE --------------

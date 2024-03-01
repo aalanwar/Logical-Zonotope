@@ -25,6 +25,6 @@ function G = generators(Z)
 
 %------------- BEGIN CODE --------------
 
-G = Z.GI;
+G = Z.G;
 
 %------------- END OF CODE --------------

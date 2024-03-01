@@ -9,6 +9,9 @@ Authors: Amr Alanwar, Frank J. Jiang, and Karl Henrik Johansson  <br />
 1- Logical Zonotope: A Set Representation for the Formal Verification of Boolean Functions <br />
 Authors: Amr Alanwar, Frank J. Jiang, Samy Amin and Karl Henrik Johansson  <br />
 
+##
+CDC 2023 talk for the 
+[![CDC 2023 talk](https://img.youtube.com/vi/peyTfhMxBEk/0.jpg)](https://youtu.be/peyTfhMxBEk)
 
 ## Abstract
 In this paper, we introduce a set representation called polynomial logical zonotopes<br />
@@ -55,19 +58,22 @@ Zred = reduce(Z): Reduces the number of generators of a logical zonotope  <br />
 
 
 ```
-@article{polylogicalZonotope,
+@article{alanwar2023polynomial,
   title={Polynomial Logical Zonotopes: A Set Representation for Reachability Analysis of Logical Systems},
-  author={Alanwar, Amr and Jiang, Frank J. and Johansson, Karl Henrik},
-  journal={arXiv preprint },
-  year={2022}
+  author={Alanwar, Amr and Jiang, Frank J and Johansson, Karl H},
+  journal={arXiv preprint arXiv:2306.12508},
+  year={2023}
 }
 ```
 
 ```
-@article{logicalZonotope,
-  title={Logical Zonotopes: A Set Representation for the Formal Verification of Boolean Functions},
-  author={Alanwar, Amr and Jiang, Frank J. and Amin, Samy and Johansson, Karl Henrik},
-  journal={arXiv preprint arXiv:2210.08596},
-  year={2022}
-}
+@INPROCEEDINGS{logicalZonotope,
+  author={Alanwar, Amr and Jiang, Frank J. and Amin, Samy and Johansson, Karl H.},
+  booktitle={2023 62nd IEEE Conference on Decision and Control (CDC)}, 
+  title={Logical Zonotopes: A Set Representation for the Formal Verification of Boolean Functions}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={60-66}}
+
 ```

@@ -25,51 +25,65 @@ function Zred = reduce(Z)
 
 %2 inputs
 
-cen = Z.c;
+
+
+points = evaluate(Z);
 gen = Z.G;
-
-
-newG = Z1.GI;
-startIdx = length(Z1.GI);
-
-for i =1:length(Z1.G)
-    newG{i+startIdx} = Z1.G{i};
-end
-if isempty(Z1.E)
-    newE = eye(size(Z1.GI,2));
-elseif isempty(Z1.GI)
-    newE =  Z1.E;
-else
-    newE = blkdiag(eye(size(Z1.GI,2)),Z1.E);
-end
-
-
-
-if ~isempty(gen)
-    points = evaluate(Z);
-    removeGen =[];
-    index=1;
-    genMat = unique(cell2mat(gen)','rows')';
-    gen= mat2cell(genMat,length(cen),ones(1,length(genMat(1,:))));
-    for i = 1:length(gen)
-        if gen{index} == cell2mat(gen)
-            break;
-        end
-        genMat=cell2mat(gen);
-        newgen = mat2cell(setdiff(genMat', gen{index}','rows')',length(cen),ones(1,length(gen(1,:))-1));
-        newZ = logicalZonotope(cen,newgen);
-        newPoints = evaluate(newZ);
-        if ismember(points',newPoints','rows')
-            removeGen =[removeGen i];
-            gen = newgen;
-        else
-            index= index +1;
-        end
+for i = 1:length(Z.G)
+    genMat=cell2mat(gen);
+    newGen = mat2cell(setdiff(genMat', Z.G{i}','rows')',length(Z.c),ones(1,length(Z.G)-1));
+    newE = Z.E(:,[1:i-1 i+1:size(Z.E,2)]);
+    newPolyZono = logicalPolyZonotope(cen,newGen,newE);
+    newPoints = evaluate(newPolyZono);
+    if ismember(points',newPoints','rows')
+        removeGen =[removeGen i];
+        gen = newGen;
     end
-    Zred = logicalZonotope(cen,gen);
-else
-    Zred = logicalZonotope(cen,{});
 end
+
+
+% 
+% newG = Z1.GI;
+% startIdx = length(Z1.GI);
+% 
+% for i =1:length(Z1.G)
+%     newG{i+startIdx} = Z1.G{i};
+% end
+% if isempty(Z1.E)
+%     newE = eye(size(Z1.GI,2));
+% elseif isempty(Z1.GI)
+%     newE =  Z1.E;
+% else
+%     newE = blkdiag(eye(size(Z1.GI,2)),Z1.E);
+% end
+% 
+% 
+% 
+% if ~isempty(gen)
+%     points = evaluate(Z);
+%     removeGen =[];
+%     index=1;
+%     genMat = unique(cell2mat(gen)','rows')';
+%     gen= mat2cell(genMat,length(cen),ones(1,length(genMat(1,:))));
+%     for i = 1:length(gen)
+%         if gen{index} == cell2mat(gen)
+%             break;
+%         end
+%         genMat=cell2mat(gen);
+%         newgen = mat2cell(setdiff(genMat', gen{index}','rows')',length(cen),ones(1,length(gen(1,:))-1));
+%         newZ = logicalZonotope(cen,newgen);
+%         newPoints = evaluate(newZ);
+%         if ismember(points',newPoints','rows')
+%             removeGen =[removeGen i];
+%             gen = newgen;
+%         else
+%             index= index +1;
+%         end
+%     end
+%     Zred = logicalZonotope(cen,gen);
+% else
+%     Zred = logicalZonotope(cen,{});
+% end
 
 end
 %------------- END OF CODE --------------

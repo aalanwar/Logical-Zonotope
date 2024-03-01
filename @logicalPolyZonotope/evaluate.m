@@ -1,27 +1,22 @@
 function points = evaluate(Z1)
-% and - overloads & operator, computes the intersection of two zonotopes
+% evaluate - computes the points inside Z1
 %
 % Syntax:  
-%    Z = not(Z1,Z2)
+%    points = evaluate(Z1)
 %
 % Inputs:
 %    Z1 - zonotope
-%    Z2 - zonotope, 
 %
 % Outputs:
-%    Z - zonotope object enclosing the and zonotope 
+%    points inside the polynomial logical zonotope
 %
 % Example: 
-%    zono1 = zonotope([4 2 2;1 2 0]);
-%    zono2 = zonotope([3 1 -1 1;3 1 2 0]);
-%
-%    res = zono1 & zono2
-%
-%    figure
-%    hold on
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
-%    plot(res,[1,2],'g');
+%   c= logical(0);
+%   g{1} = logical(1);
+%   id = [1];
+%   E =[1];
+%   pZ = logicalPolyZonotope(c,g,E,id);
+%   points = evaluate(pZ);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,40 +35,27 @@ function points = evaluate(Z1)
 points = [];
 
 
-newG = Z1.GI;
-startIdx = length(Z1.GI);
 
-for i =1:length(Z1.G)
-    newG{i+startIdx} = Z1.G{i};
-end
-if isempty(Z1.E)
-    newE = eye(size(Z1.GI,2));
-elseif isempty(Z1.GI)
-    newE =  Z1.E;
-else
-    newE = blkdiag(eye(size(Z1.GI,2)),Z1.E);
-end
-
-if ~isempty(newG)
-    numOfalphas = size(newE,1);%size( newG,2 );
-    numOfGens= size( newG,2 );
+if ~isempty(Z1.G)
+    numOfalphas = size(Z1.E,1);%size( Z1.G,2 );
+    numOfGens= size( Z1.G,2 );
     L=2^numOfalphas;
     for i=1:L
         table = de2bi(i-1,numOfalphas,'left-msb');
 
         multAlpha = 1;
-        for iErow = 1:size(newE,1)
-            multAlpha = multAlpha & (table(1,iErow)^newE(iErow,1) );
+        for iErow = 1:size(Z1.E,1)
+            multAlpha = multAlpha & (table(1,iErow)^Z1.E(iErow,1) );
         end
 
-        onePoint=[ multAlpha&newG{1}];
+        onePoint=[ multAlpha&Z1.G{1}];
         for j=2:numOfGens
             multAlpha = 1;
-            for iErow = 1:size(newE,1)
-                multAlpha = multAlpha & (table(1,iErow)^newE(iErow,j) );
+            for iErow = 1:size(Z1.E,1)
+                multAlpha = multAlpha & (table(1,iErow)^Z1.E(iErow,j) );
             end
 
-            onePoint =xor( onePoint, (multAlpha&newG{j}) );
+            onePoint =xor( onePoint, (multAlpha&Z1.G{j}) );
         end
         if ~isempty(Z1.c)
             points = [ points xor(Z1.c,onePoint)];

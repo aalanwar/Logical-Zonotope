@@ -2,13 +2,14 @@ clear all
 close all
 
 rng(4);
-c1 = [0;0];
-c2 = [0;1];
-g1 = {[1;0]};
+dim =5;
+c1 = randi([0 1],dim,1);
+c2 = randi([0 1],dim,1);
+g1 = {randi([0 1],dim,1)};
 %g1 = {[0 1;1 1]};
-g2 = {[1;1]};
+g2 = {randi([0 1],dim,1)};
 %g2 = {[1 0;0 1]};
-dim =3;
+
 c3= [randi([0 1],dim,1) ];
 for i=1:10
 g3{i} = randi([0 1],dim,1);

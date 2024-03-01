@@ -25,10 +25,12 @@ function Z = unique(Z1)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+Z=Z1;
 %independent generators
-gMatI = cell2mat(Z1.GI);
-gMatI = unique(gMatI','rows')';
-newGenI = mat2cell( gMatI ,size(gMatI,1),ones(1,size(gMatI,2)) );
+% gMatI = cell2mat(Z1.GI);
+% gMatI = unique(gMatI','rows')';
+% newGenI = mat2cell( gMatI ,size(gMatI,1),ones(1,size(gMatI,2)) );
 
 
 % %dep generators
@@ -44,23 +46,10 @@ newGenI = mat2cell( gMatI ,size(gMatI,1),ones(1,size(gMatI,2)) );
 %if isequal(indexgMat,indexE)
 %    Z = logicalPolyZonotope(Z1.c,newGenI,newGen,newE);
 %else
-    Z = logicalPolyZonotope(Z1.c,newGenI,Z1.G,Z1.E);    
+ %   Z = logicalPolyZonotope(Z1.c,newGenI,Z1.G,Z1.E,Z1.id);    
 %end
 
-if size(Z1.c,1) ==1
-    Z=rmZeroGens(Z);
-    pts=evaluate(Z);
-    if isequal(pts,[0 1])
-        %Zono=logicalZonotope.enclosePoints([0,1]);
-        Z=logicalPolyZonotope(0,{1},{},[]);
-    elseif isequal(pts,1)
-        %Zono=logicalZonotope.enclosePoints(1);
-        Z=logicalPolyZonotope(1,{},{},[]);
-    elseif isequal(pts,0)
-        %Zono=logicalZonotope.enclosePoints(0);
-        Z=logicalPolyZonotope(0,{},{},[]);
-    end
-end
+
 
 end
 

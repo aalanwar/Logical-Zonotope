@@ -1,8 +1,8 @@
-function Z = and(Z1,Z2,varargin)
-% and - overloads & operator, computes the AND of two logical poly zonotopes
+function Z = exactAnd(Z1,Z2,varargin)
+% exactAnd - overloads & operator, computes the AND of two logical poly zonotopes
 %
 % Syntax:
-%    Z = and(Z1,Z2)
+%    Z = exactAnd(Z1,Z2)
 %
 % Inputs:
 %    Z1 - zonotope
@@ -44,18 +44,35 @@ end
 
 
 
-
 h1=length(Z1.G);
 p1=size(Z1.E,1);
-
 h2=length(Z2.G);
 p2=size(Z2.E,1);
 zeroVec = logical(zeros(size(Z1.c)));
+indexI =1;
 newE =[];
 index =1;
 newGen ={};
 
-% there is no generators in Z2 to multiply with Z1
+% bring the exponent matrices to a common representation
+[idCom,E1Com,E2Com] = mergeExpMatrix(Z1.id,Z2.id,Z1.E,Z2.E);
+
+
+[rE1,cE1] = size(E1Com);
+[rE2,cE2] = size(E2Com);
+
+if rE1 >rE2
+    E2ComZeros = [E2Com;zeros(rE1-rE2,cE2)];
+    E1ComZeros = E1Com;
+else
+    E1ComZeros = [E1Com;zeros(rE2-rE1,cE1)];
+    E2ComZeros = E2Com;
+end
+
+E1Com = E1ComZeros;
+E2Com = E2ComZeros;
+
+
 
 
 
@@ -67,7 +84,7 @@ if(~isempty(Z2.c) && ~isempty(Z1.G))
             continue;
         end
         newGen{index} = vecAnd;
-        newE = [newE [Z1.E(:,i);zeros(p2,1)]];
+        newE = [newE E1Com(:,i)];
         index=index+1;
     end
 end
@@ -80,7 +97,7 @@ if(~isempty(Z1.c) && ~isempty(Z2.G))
             continue;
         end
         newGen{index} = vecAnd;
-        newE = [newE [zeros(p1,1);Z2.E(:,i)]];        
+        newE = [newE E2Com(:,i)];        
         index=index+1;
     end
 end
@@ -93,15 +110,31 @@ if(~isempty(Z1.G) && ~isempty(Z2.G))
                 continue;
             end
             newGen{index} = vecAnd;
-            newE = [newE [Z1.E(:,i);Z2.E(:,k)]]; 
+            tempECom=max([E1Com(:,i),E2Com(:,k)] ,[],2);
+            newE = [newE tempECom]; 
             index=index+1;
         end
     end
 end
 
 
-Z = logicalPolyZonotope(newcen,newGen,newE);
-Z = unique(Z);
+% % and up all generators that belong to identical exponents+
+if ~isempty(newGen)
+    for i=1:length(newGen)
+        newGenVec(:,i) = newGen{i};
+    end
+
+    [newE,newGenComVec] = removeRedundantExponents(newE,newGenVec);
+
+    for i=1:size(newGenComVec,2)
+        newGenComCell{i}= newGenComVec(:,i) ;
+    end
+
+    Z = logicalPolyZonotope(newcen,newGenComCell,newE,idCom);
+else
+    Z = logicalPolyZonotope(newcen,newGen,newE,idCom);
+end
+%Z = unique(Z);
 
 
 end

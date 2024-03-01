@@ -27,15 +27,16 @@ function Z = or(Z1,Z2)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-if ~isa(Z1,'logicalPolyZonotope') 
-Z1=logicalZonotope.enclosePoints(Z1);
-Z1=logicalPolyZonotope(Z1.c,Z1.G,{},[]);
+if ~isa(Z1,'logicalPolyZonotope')
+    Z1=logicalZonotope.enclosePoints(Z1);
+    Z1=logicalPolyZonotope(Z1.c,Z1.G,eye(length(Z1.G)));
 end
 
-if ~isa(Z2,'logicalPolyZonotope') 
-Z2=logicalZonotope.enclosePoints(Z2);
-Z2=logicalPolyZonotope(Z2.c,Z2.G,{},[]);
+if ~isa(Z2,'logicalPolyZonotope')
+    Z2=logicalZonotope.enclosePoints(Z2);
+    Z2=logicalPolyZonotope(Z2.c,Z2.G,eye(length(Z2.G)));
 end
+
 
 Z = nand(not(Z1),not(Z2));
 %Z = nand(nand(Z1,Z1),nand(Z2,Z2));

@@ -33,12 +33,9 @@ newG ={};
 for i =1:length(Z.G)
     newG{i}=Z.G{i}(proj,:);
 end
-newGI ={};
-for i =1:length(Z.GI)
-    newGI{i}=Z.GI{i}(proj,:);
-end
 
-pZ =logicalPolyZonotope(cen,newGI,newG,Z.E);
+
+pZ =logicalPolyZonotope(cen,newG,Z.E);
 end
 
 %------------- END OF CODE --------------

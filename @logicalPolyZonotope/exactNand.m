@@ -1,14 +1,15 @@
-function Z = not(Z1)
-% and - overloads ~ operator, computes not of a logical zonotope
+function Z = exactNand(Z1,Z2)
+% nand - computes the nand of two logical zonotopes
 %
 % Syntax:  
-%    Z = not(Z1)
+%    Z = nand(Z1,Z2)
 %
 % Inputs:
 %    Z1 - zonotope
+%    Z2 - zonotope, 
 %
 % Outputs:
-%    Z - zonotope object enclosing the and zonotope 
+%    Z - zonotope object enclosing the nand zonotope 
 %
 % Example: 
 %
@@ -26,16 +27,10 @@ function Z = not(Z1)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-if (~isempty(Z1.c))
-    [rows,cols] = size(Z1.c);
-    Z = logicalPolyZonotope(xor(ones(rows,1),Z1.c),Z1.G,Z1.E,Z1.id);
-else
-    [rows,cols] = size(Z1.G{1});
-    Z = logicalPolyZonotope(logical(ones(rows,1)),Z1.G,Z1.E,Z1.id);
-end
 
 
-
+Z=not(exactAnd(Z1,Z2));
+%Z =unique(Z);
 end
 
 %------------- END OF CODE --------------

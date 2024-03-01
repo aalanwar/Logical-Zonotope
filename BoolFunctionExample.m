@@ -21,7 +21,7 @@ for i=1:numOfVar
         g{j} = logical(randi([0 1],dim,1));
     end
     Az{i} = logicalZonotope(c,g);
-    Apz{i} = logicalPolyZonotope(c,g,{},[]);
+    Apz{i} = logicalPolyZonotope(c,g,eye(length(g)));
     Apt{i} = evaluate(Az{i});
 end
 
@@ -32,7 +32,7 @@ for i=1:numOfVarU
         g{j} = logical(randi([0 1],dim,1));
     end
     Uz{i} = logicalZonotope(c,g);
-    Upz{i} = logicalPolyZonotope(c,g,{},[]);
+    Upz{i} = logicalPolyZonotope(c,g,eye(length(g)));
     pointsU{i} = evaluate(Uz{i});
 end
 

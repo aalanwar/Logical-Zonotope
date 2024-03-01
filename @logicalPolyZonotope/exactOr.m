@@ -1,15 +1,15 @@
-function Z = xnor(Z1,Z2)
-% xnor - computes the xnor of two zonotopes
+function Z = exactOr(Z1,Z2)
+% and - overloads | operator, computes the or of two logical poly zonotopes
 %
 % Syntax:  
-%    Z = xnor(Z1,Z2)
+%    Z = exactOr(Z1,Z2)
 %
 % Inputs:
-%    Z1 - zonotope
-%    Z2 - zonotope, 
+%    Z1 - logical poly zonotope
+%    Z2 - logical poly zonotope, 
 %
 % Outputs:
-%    Z - zonotope object enclosing the xnor zonotope 
+%    Z - logical poly zonotope object enclosing the exact or logical poly zonotope 
 %
 % Example: 
 %
@@ -20,8 +20,8 @@ function Z = xnor(Z1,Z2)
 % See also: none
 
 % Author:        Amr Alanwar
-% Written:       16-October-2022
-% Last update:   16-October-2022
+% Written:       7-Jan-2023
+% Last update:   
 %                
 %                
 % Last revision: ---
@@ -37,9 +37,9 @@ if ~isa(Z2,'logicalPolyZonotope')
     Z2=logicalPolyZonotope(Z2.c,Z2.G,eye(length(Z2.G)));
 end
 
+Z = exactNand(not(Z1),not(Z2));
 
-Z = not(xor(Z1,Z2));
-%Z =unique(Z);
+
 end
 
 %------------- END OF CODE --------------
