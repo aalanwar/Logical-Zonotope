@@ -9,9 +9,12 @@ Authors: Amr Alanwar, Frank J. Jiang, and Karl Henrik Johansson  <br />
 1- Logical Zonotope: A Set Representation for the Formal Verification of Boolean Functions <br />
 Authors: Amr Alanwar, Frank J. Jiang, Samy Amin and Karl Henrik Johansson  <br />
 
-##
-CDC 2023 talk for the 
+## CDC 2023 talk 
 [![CDC 2023 talk](https://img.youtube.com/vi/peyTfhMxBEk/0.jpg)](https://youtu.be/peyTfhMxBEk)
+
+## International Online Seminar on Interval Methods in Control Engineering 
+[![Seminar](https://img.youtube.com/vi/xEVqpGp1HBc/0.jpg)](https://www.youtube.com/watch?v=xEVqpGp1HBc)
+
 
 ## Abstract
 In this paper, we introduce a set representation called polynomial logical zonotopes<br />
